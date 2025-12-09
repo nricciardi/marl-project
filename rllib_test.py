@@ -8,9 +8,30 @@ from pprint import pprint
 import json
 
 
-
+NUM_CPU_REALI = 8
 BASE_DIR = "./checkpoints"
 
+
+def get_hardware_config(num_cpu):
+    """Calcola la configurazione ottimale in base ai core disponibili"""
+    if num_cpu <= 5:
+        # CONFIGURAZIONE "TIGHT" (5 CPU)
+        # Lasciamo 1 core per Sistema/GPU, usiamo 4 per giocare.
+        return {
+            "num_env_runners": 4, 
+            "num_envs_per_worker": 8,  # 32 partite totali (4x8)
+            "train_batch_size": 4096,  # Batch solido per stabilità
+            "sgd_minibatch_size": 512, # Buon compromesso memoria/velocità
+        }
+    else:
+        # CONFIGURAZIONE "BALANCED" (8 CPU)
+        # Lasciamo 2 core per Sistema/GPU (più respiro), usiamo 6 per giocare.
+        return {
+            "num_env_runners": 6,
+            "num_envs_per_worker": 10, # 60 partite totali (6x10) - Alta parallelizzazione
+            "train_batch_size": 6000,  # Batch più grande = gradienti più precisi
+            "sgd_minibatch_size": 1024,# La GPU mangia di più
+        }
 
 def env_creator(config=None, render_mode="rgb_array"):
     env = cooperative_pong_v5.env(render_mode=render_mode)
@@ -42,6 +63,8 @@ env_name = "coop_pong_v5"
 ray.tune.register_env(env_name, env_creator)
 
 
+hw_params = get_hardware_config(NUM_CPU_REALI)
+
 # Configure PPO
 config = (
     PPOConfig()
@@ -49,17 +72,17 @@ config = (
     .framework("torch")
     .resources(
         num_gpus=1,             # GPU per il Learner
-        num_cpus_for_main_process=1   # 1 CPU Thread per ogni Worker
+        num_cpus_per_worker=1   # 1 CPU Thread per ogni Worker
     )
     .env_runners(
         # TARIAMO SULLA TUA CPU (16 Thread totali)
         # Usiamo 10 worker paralleli. 
         # Lasciamo spazio al Learner (che usa molta CPU per preparare i dati GPU)
-        num_env_runners=5,      
+        num_env_runners=hw_params["num_env_runners"],      
         
         # Vettorializzazione: ogni worker porta avanti 8 partite.
         # 10 workers * 8 envs = 80 partite simultanee -> Raccolta dati velocissima
-        num_envs_per_env_runner=8, 
+        num_envs_per_env_runner=hw_params["num_envs_per_worker"], 
         
         # Raccogliamo "frammenti" di partite senza aspettare che finiscano tutte
         # Questo fluidifica il flusso dei dati
@@ -75,17 +98,21 @@ config = (
         train_batch_size=1024, 
         
         # Parametri PPO standard
-        lr=1e-4, 
+        lr=2e-4, 
         gamma=0.99,
         lambda_=0.95,
+        clip_param=0.2,
         
         # Meno iterazioni sui dati vecchi = più velocità
-        num_epochs=5, 
+        num_epochs=30, 
+
+        vf_loss_coeff=0.01,
+        entropy_coeff=0.01
     )
     .update_from_dict({
         # La GPU NVIDIA lavora meglio con matrici grandi.
         # 2048 o 4096 è ideale per schede moderne.
-        "sgd_minibatch_size": 256,
+        "sgd_minibatch_size": hw_params["sgd_minibatch_size"],
         "model": {
             "vf_share_layers": True,
         }
