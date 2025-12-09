@@ -1,0 +1,7 @@
+torch
+tianshou
+ray[rllib]
+mpe2
+pettingzoo[butterfly]
+supersuit
+gymnasium[atari,accept-rom-license,mujoco]
