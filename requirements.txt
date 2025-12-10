@@ -1,6 +1,13 @@
 torch
+pygame
+numpy
+pandas
+matplotlib
+seaborn
+argparse-dataclass
 ray[rllib]
 mpe2
 pettingzoo[butterfly]
 supersuit
 gymnasium[atari,accept-rom-license,mujoco]
+gputil

@@ -14,5 +14,25 @@
 
 module load cuda/12.6.3-none-none
 
+export PYTHONPATH=./src:$PYTHONPATH
 
-python3 -O rllib_test.py
+checkpoint_dir=$1
+
+python3 -O ./src/cooperative_pong/train.py \
+    --mode shared \
+    --checkpoint-dir $checkpoint_dir \
+    --iters 100 \
+    --save-interval 2 \
+    --env-runners 6 \
+    --num-envs-per-env-runner 40 \
+    --num-cpus-per-env-runner 1 \
+    --num-gpus-per-env-runner 0 \
+    --lr 0.00005 \
+    --gamma 0.99 \
+    --training-batch-size 6000 \
+    --epochs 5 \
+    --num-learners 1 \
+    --num-gpus-per-learner 0.5 \
+    --num-cpus-per-learner 1 \
+    --entropy-coeff 0.02 \
+    --minibatch-size 1024
