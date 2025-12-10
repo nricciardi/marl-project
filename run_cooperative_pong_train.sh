@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH --job-name=train_metaslot
-#SBATCH --output=/homes/nricciardi/repository/tesi-magistrale/ocl/logs/train_metaslot_%j.out
-#SBATCH --error=/homes/nricciardi/repository/tesi-magistrale/ocl/logs/train_metaslot_%j.err
+#SBATCH --job-name=dai
+#SBATCH --output=./logs/train_%j.out
+#SBATCH --error=./logs/train_%j.err
 #SBATCH --account=tesi_nricciardi
 #SBATCH --partition=all_usr_prod
 #SBATCH --ntasks-per-node=1
