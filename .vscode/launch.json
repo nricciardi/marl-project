@@ -1,6 +1,35 @@
 {
     "configurations": [
         {
+            "name": "Python Debugger: MPE2 Simple Adversary Training",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/cooperative_pong/train.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--mode", "shared",
+                "--checkpoint-dir", "${workspaceFolder}/checkpoints/cooperative_pong",
+                "--iters", "10",
+                "--save-interval", "2",
+                "--env-runners", "6",
+                "--num-envs-per-env-runner", "20",
+                "--num-cpus-per-env-runner", "1",
+                "--num-gpus-per-env-runner", "0",
+                "--lr", "0.0001",
+                "--gamma", "0.99",
+                "--training-batch-size", "6000",
+                "--epochs", "5",
+                "--num-learners", "1",
+                "--num-gpus-per-learner", "0.5",
+                "--num-cpus-per-learner", "1",
+                "--entropy-coeff", "0.01",
+                "--minibatch-size", "512",
+            ],
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src"
+            }
+        },
+        {
             "name": "Python Debugger: Cooperative Pong Training",
             "type": "debugpy",
             "request": "launch",

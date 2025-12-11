@@ -5,41 +5,39 @@ from ray.tune.registry import register_env
 from common.cli import CommonTrainingArgs
 from common.ppo import initialize_base_ppo_from_args
 from common.tuner import initialize_base_tuner
-from cooperative_pong.environment import environment_creator
 from argparse_dataclass import dataclass, ArgumentParser
 from typing import Literal
 
+from simple_adversary.environment import environment_creator
 
 logging.basicConfig(level=logging.INFO)
 
-
 @dataclass
 class TrainingArgs(CommonTrainingArgs):
-    mode: Literal["shared", "independent"]
+    # "group_shared" = Bad agents share a policy, Good agents share a different policy
+    mode: Literal["independent", "group_shared"]
+
+    n_good_agents: int
+    max_cycles: int
+    continuous_actions: bool
 
 
 def get_policy_config(mode: str) -> dict:
-    
-    if mode == "shared":
+    if mode == "independent":
         return {
-            "policies": {
-                "shared_policy"
-            },
-            "policy_mapping_fn": lambda agent_id, *args, **kwargs: "shared_policy"
+            "policy_mapping_fn": lambda agent_id, *args, **kwargs: agent_id
         }
     
-    elif mode == "independent":
+    elif mode == "group_shared":
         return {
-            "policies": {
-                "agent_0_policy",
-                "agent_1_policy"
-            },
-            "policy_mapping_fn": lambda agent_id, *args, **kwargs: f"agent_{agent_id}_policy"
+            "policies": {"adversary_policy", "agent_policy"},
+            "policy_mapping_fn": lambda agent_id, *args, **kwargs: (
+                "adversary_policy" if "adversary" in agent_id else "agent_policy"
+            )
         }
     
     raise ValueError(f"Unknown mode: {mode}")
 
-    
 if __name__ == "__main__":
     args = ArgumentParser(TrainingArgs).parse_args()
     logging.info("Parsed training arguments.")
@@ -50,13 +48,20 @@ if __name__ == "__main__":
     logging.info("Initializing Ray...")
     ray.init()
 
-    logging.info("Registering Cooperative Pong environment...")
-    env_name = "cooperative_pong_v5"
-    register_env(env_name, environment_creator)
+    logging.info("Registering Simple Adversary environment...")
+    env_name = "simple_adversary_v3"
+    register_env(env_name, lambda config: environment_creator(**config))
 
     config = (
         initialize_base_ppo_from_args(args)
-        .environment(env_name)
+        .environment(
+            env_name,
+            env_config={
+                "n_good_agents": args.n_good_agents,
+                "max_cycles": args.max_cycles,
+                "continuous_actions": args.continuous_actions,
+            },
+        )
         .multi_agent(
             **get_policy_config(args.mode)
         )
@@ -79,4 +84,3 @@ if __name__ == "__main__":
     logging.info("Training completed.")
 
     ray.shutdown()
-    
