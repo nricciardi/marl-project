@@ -18,9 +18,6 @@ def initialize_base_ppo_from_args(args: CommonTrainingArgs) -> PPOConfig:
                 num_gpus_per_learner=args.num_gpus_per_learner,
                 num_cpus_per_learner=args.num_cpus_per_learner,
             )
-            .training(
-                minibatch_size=args.minibatch_size,
-            )
         )
     
     return config

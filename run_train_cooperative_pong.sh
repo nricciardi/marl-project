@@ -29,7 +29,7 @@ python3 -O ./src/cooperative_pong/train.py \
     --num-gpus-per-env-runner 0 \
     --lr 0.00005 \
     --gamma 0.99 \
-    --training-batch-size 6000 \
+    --training-batch-size 4096 \
     --epochs 5 \
     --num-learners 1 \
     --num-gpus-per-learner 0.5 \

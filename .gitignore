@@ -1,6 +1,9 @@
 checkpoints/*
 !checkpoints/.gitkeep
 
+wandb/*
+!wandb/.gitkeep
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

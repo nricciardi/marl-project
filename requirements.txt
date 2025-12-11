@@ -7,7 +7,8 @@ seaborn
 argparse-dataclass
 ray[rllib]
 mpe2
-pettingzoo[butterfly]
+pettingzoo[butterfly, sisl]
 supersuit
 gymnasium[atari,accept-rom-license,mujoco]
 gputil
+wandb

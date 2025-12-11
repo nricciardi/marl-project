@@ -18,8 +18,8 @@ export PYTHONPATH=./src:$PYTHONPATH
 
 checkpoint_dir=$1
 
-python3 -O ./src/simple_adversary/train.py \
-    --mode group_shared \
+python3 -O ./src/multiwalker/train.py \
+    --mode shared \
     --checkpoint-dir $checkpoint_dir \
     --iters 200 \
     --save-interval 10 \
@@ -27,14 +27,16 @@ python3 -O ./src/simple_adversary/train.py \
     --num-envs-per-env-runner 40 \
     --num-cpus-per-env-runner 1 \
     --num-gpus-per-env-runner 0 \
-    --lr 0.0003 \
+    --lr 0.0001 \
     --gamma 0.99 \
     --training-batch-size 4096 \
-    --epochs 10 \
+    --epochs 20 \
     --num-learners 1 \
     --num-gpus-per-learner 0.5 \
     --num-cpus-per-learner 1 \
     --entropy-coeff 0.01 \
     --minibatch-size 2048 \
-    --n-good-agents 2 \
+    --n-good-agents 1 \
+    --n-bad-agents 3 \
+    --n-obstacles 2 \
     --max-cycles 25

@@ -28,4 +28,4 @@ class CommonTrainingArgs:
     training_batch_size: List[int] = field(metadata={"help": "Train batch size(s)", "nargs": "+"})
     epochs: List[int] = field(metadata={"help": "SGD epochs per iter", "nargs": "+"})
     entropy_coeff: List[float] = field(metadata={"help": "Entropy coefficient(s)", "nargs": "+"})
-    minibatch_size: int = field(metadata={"help": "Minibatch size for SGD"})
+    minibatch_size: List[int] = field(metadata={"help": "Minibatch size(s) for SGD", "nargs": "+"})
