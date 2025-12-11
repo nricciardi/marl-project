@@ -21,6 +21,9 @@ class CommonTrainingArgs:
     num_cpus_per_learner: int = field(metadata={"help": "Number of CPUs per learner worker"})
     save_interval: int = field(metadata={"help": "Checkpoint frequency"})
     
+    from_checkpoint: Optional[str] = field(default=None, metadata={"help": "Directory to store results"})
+
+
     # Training Loop settings
     iters: int = field(metadata={"help": "Stop after N iterations"})
     lr: List[float] = field(metadata={"help": "Learning rate(s) to sweep", "nargs": "+"})

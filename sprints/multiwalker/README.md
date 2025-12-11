@@ -55,3 +55,110 @@ python3 -O ./src/multiwalker/train.py \
 ![](2.png)
 
 Overfitting
+
+
+
+### 3
+
+```
+python3 -O ./src/multiwalker/train.py \
+    --mode shared \
+    --checkpoint-dir $checkpoint_dir \
+    --iters 500 \
+    --save-interval 10 \
+    --env-runners 6 \
+    --num-envs-per-env-runner 20 \
+    --num-cpus-per-env-runner 1 \
+    --num-gpus-per-env-runner 0 \
+    --lr 0.0003 \
+    --gamma 0.99 \
+    --training-batch-size 61440 \
+    --epochs 10 \
+    --num-learners 1 \
+    --num-gpus-per-learner 0.5 \
+    --num-cpus-per-learner 1 \
+    --entropy-coeff 0.01 \
+    --minibatch-size 4096 \
+    --n-walkers 3
+```
+
+![](3.png)
+
+
+Catastrophic Forgetting
+
+
+### 4
+
+```
+python3 -O ./src/multiwalker/train.py \
+    --mode shared \
+    --checkpoint-dir $checkpoint_dir \
+    --iters 300 \
+    --save-interval 10 \
+    --env-runners 6 \
+    --num-envs-per-env-runner 20 \
+    --num-cpus-per-env-runner 1 \
+    --num-gpus-per-env-runner 0 \
+    --lr 0.0003 \
+    --gamma 0.99 \
+    --training-batch-size 30720 \
+    --epochs 10 \
+    --num-learners 1 \
+    --num-gpus-per-learner 0.5 \
+    --num-cpus-per-learner 1 \
+    --entropy-coeff 0.005 \
+    --minibatch-size 4096 \
+    --n-walkers 3
+```
+
+![](4.png)
+
+### 5
+
+```
+python3 -O ./src/multiwalker/train.py \
+    --mode shared \
+    --checkpoint-dir $checkpoint_dir \
+    --iters 300 \
+    --save-interval 10 \
+    --env-runners 6 \
+    --num-envs-per-env-runner 20 \
+    --num-cpus-per-env-runner 1 \
+    --num-gpus-per-env-runner 0 \
+    --lr 0.0003 \
+    --gamma 0.99 \
+    --training-batch-size 30720 \
+    --epochs 10 \
+    --num-learners 1 \
+    --num-gpus-per-learner 0.5 \
+    --num-cpus-per-learner 1 \
+    --entropy-coeff 0.005 \
+    --minibatch-size 4096 \
+    --n-walkers 3
+```
+
+After iter 60:
+
+```
+python3 -O ./src/multiwalker/train.py \
+    --mode shared \
+    --checkpoint-dir $checkpoint_dir \
+    --from-checkpoint $from_checkpoint \
+    --iters 300 \
+    --save-interval 10 \
+    --env-runners 6 \
+    --num-envs-per-env-runner 20 \
+    --num-cpus-per-env-runner 1 \
+    --num-gpus-per-env-runner 0 \
+    --lr 0.00005 \
+    --gamma 0.99 \
+    --training-batch-size 30720 \
+    --epochs 5 \
+    --num-learners 1 \
+    --num-gpus-per-learner 0.5 \
+    --num-cpus-per-learner 1 \
+    --entropy-coeff 0.005 \
+    --minibatch-size 2048 \
+    --n-walkers 3
+```

@@ -36,6 +36,10 @@ if __name__ == "__main__":
     
     algo = config.build_algo()
 
+    if args.from_checkpoint:
+        logging.info(f"Restoring from checkpoint directory {args.from_checkpoint}...")
+        algo.restore(args.from_checkpoint)
+
     param_space = config.to_dict()
 
     tuner = initialize_base_tuner(
