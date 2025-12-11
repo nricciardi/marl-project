@@ -2,9 +2,9 @@ import ray
 import logging
 from ray.tune.registry import register_env
 from eval.visualize import visualize
-from simple_tag.environment import environment_creator
-from simple_tag.ppo import get_eval_ppo_config
-from simple_tag.cli import EvalArgs
+from multiwalker.environment import environment_creator
+from multiwalker.ppo import get_eval_ppo_config
+from multiwalker.cli import EvalArgs
 from argparse_dataclass import ArgumentParser
 
 
@@ -18,8 +18,8 @@ if __name__ == "__main__":
     logging.info("Initializing Ray...")
     ray.init()
 
-    logging.info("Registering Simple Tag environment...")
-    env_name = "simple_tag"
+    logging.info("Registering Multiwalker environment...")
+    env_name = "multiwalker"
     register_env(env_name, lambda config: environment_creator(**config))
     
     config = get_eval_ppo_config(
@@ -34,11 +34,7 @@ if __name__ == "__main__":
         algo.restore(args.checkpoint_path)
 
     env = environment_creator(
-        n_good_agents=args.n_good_agents,
-        n_bad_agents=args.n_bad_agents,
-        n_obstacles=args.n_obstacles,
-        max_cycles=args.max_cycles,
-        continuous_actions=args.continuous_actions,
+        n_walkers=args.n_walkers,
         render_mode="human",
     )
 

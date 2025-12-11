@@ -38,4 +38,3 @@ class CommonEvalArgs:
     """
     checkpoint_path: Optional[str] = field(default=None, metadata={"help": "Path to the checkpoint to evaluate"})
     n_episodes: int = field(default=10, metadata={"help": "Number of episodes to evaluate"})
-    video_dir: Union[str, None] = field(default=None, metadata={"help": "Directory to save videos, if enabled"})

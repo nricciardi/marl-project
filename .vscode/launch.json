@@ -11,6 +11,22 @@
             }
         },
         {
+            "name": "Python Debugger: Multiwalker Eval",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/multiwalker/visualize.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--checkpoint-path", "${workspaceFolder}/checkpoints/multiwalker/PPO_2025-12-11_18-38-45/PPO_multiwalker_3e5c6_00000_0_entropy_coeff=0.0100,gamma=0.9900,lr=0.0003,minibatch_size=4096,num_epochs=10,train_batch_size=61440_2025-12-11_18-38-45/checkpoint_000004",
+                "--n-episodes", "10",
+                "--mode", "shared",
+                "--n-walkers", "3",
+            ],
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src"
+            }
+        },
+        {
             "name": "Python Debugger: MPE2 Simple Adversary Training",
             "type": "debugpy",
             "request": "launch",
@@ -64,7 +80,6 @@
             "console": "integratedTerminal",
             "args": [
                 "--checkpoint-path", "${workspaceFolder}/checkpoints/simple_tag/PPO_2025-12-11_11-55-00/PPO_simple_tag_d6be5_00000_0_entropy_coeff=0.0100,gamma=0.9900,lr=0.0001,minibatch_size=4096,num_epochs=20,train_batch_size=12000_2025-12-11_11-55-00/checkpoint_000019",
-                "--video-dir", "${workspaceFolder}/checkpoints/simple_tag/PPO_2025-12-11_11-55-00/PPO_simple_tag_d6be5_00000_0_entropy_coeff=0.0100,gamma=0.9900,lr=0.0001,minibatch_size=4096,num_epochs=20,train_batch_size=12000_2025-12-11_11-55-00/checkpoint_000019",
                 "--n-episodes", "10",
                 "--mode", "group_shared",
                 "--n-good-agents", "1",

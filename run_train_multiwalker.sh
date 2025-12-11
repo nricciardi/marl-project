@@ -24,19 +24,16 @@ python3 -O ./src/multiwalker/train.py \
     --iters 200 \
     --save-interval 10 \
     --env-runners 6 \
-    --num-envs-per-env-runner 40 \
+    --num-envs-per-env-runner 5 \
     --num-cpus-per-env-runner 1 \
     --num-gpus-per-env-runner 0 \
-    --lr 0.0001 \
+    --lr 0.0003 \
     --gamma 0.99 \
-    --training-batch-size 4096 \
-    --epochs 20 \
+    --training-batch-size 61440 \
+    --epochs 10 \
     --num-learners 1 \
     --num-gpus-per-learner 0.5 \
     --num-cpus-per-learner 1 \
     --entropy-coeff 0.01 \
-    --minibatch-size 2048 \
-    --n-good-agents 1 \
-    --n-bad-agents 3 \
-    --n-obstacles 2 \
-    --max-cycles 25
+    --minibatch-size 4096 \
+    --n-walkers 3

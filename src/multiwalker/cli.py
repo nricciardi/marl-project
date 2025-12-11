@@ -5,17 +5,13 @@ from common.cli import CommonEvalArgs, CommonTrainingArgs
 
 @dataclass
 class EnvSpecificArgs:
-    n_good_agents: int
-    n_bad_agents: int
-    n_obstacles: int
-    max_cycles: int
-    continuous_actions: bool
+    n_walkers: int
 
 
 @dataclass
 class TrainingArgs(CommonTrainingArgs, EnvSpecificArgs):
-    mode: Literal["independent", "group_shared"]
+    mode: Literal["independent", "shared"]
 
 @dataclass
 class EvalArgs(CommonEvalArgs, EnvSpecificArgs):
-    mode: Literal["independent", "group_shared"]
+    mode: Literal["independent", "shared"]
