@@ -162,3 +162,5 @@ python3 -O ./src/multiwalker/train.py \
     --minibatch-size 2048 \
     --n-walkers 3
 ```
+
+![](5.png)
