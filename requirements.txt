@@ -12,3 +12,5 @@ supersuit
 gymnasium[atari,accept-rom-license,mujoco]
 gputil
 wandb
+imageio[ffmpeg] 
+ipywidgets

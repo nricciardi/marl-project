@@ -3,7 +3,7 @@ import ray
 import logging
 from ray.tune.registry import register_env
 from common.cli import CommonTrainingArgs
-from common.ppo import initialize_base_ppo_from_args
+from common.ppo import initialize_base_training_ppo_from_args
 from common.tuner import initialize_base_tuner
 from cooperative_pong.environment import environment_creator
 from argparse_dataclass import dataclass, ArgumentParser
@@ -55,7 +55,7 @@ if __name__ == "__main__":
     register_env(env_name, environment_creator)
 
     config = (
-        initialize_base_ppo_from_args(args)
+        initialize_base_training_ppo_from_args(args)
         .environment(env_name)
         .multi_agent(
             **get_policy_config(args.mode)
