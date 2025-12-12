@@ -10,6 +10,8 @@ def initialize_base_tuner(args: CommonTrainingArgs, param_space: dict, algo_clas
     param_space["train_batch_size"] = tune.grid_search(args.training_batch_size)
     param_space["num_epochs"] = tune.grid_search(args.epochs)
     param_space["minibatch_size"] = tune.grid_search(args.minibatch_size)
+    param_space["lambda_"] = tune.grid_search(args.lambda_)
+    param_space["clip_param"] = tune.grid_search(args.clip_param)
 
     tuner = tune.Tuner(
         algo_class,

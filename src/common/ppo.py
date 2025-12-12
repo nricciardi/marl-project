@@ -12,6 +12,7 @@ def initialize_base_training_ppo_from_args(args: CommonTrainingArgs) -> PPOConfi
                 num_envs_per_env_runner=args.num_envs_per_env_runner,
                 num_cpus_per_env_runner=args.num_cpus_per_env_runner,
                 num_gpus_per_env_runner=args.num_gpus_per_env_runner,
+                observation_filter=args.observation_filter
             )
             .learners(
                 num_learners=args.num_learners,

@@ -14,16 +14,17 @@
             "name": "Python Debugger: Multiwalker Eval",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/src/multiwalker/visualize.py",
+            "program": "${workspaceFolder}/src/multiwalker/eval.py",
             "console": "integratedTerminal",
             "args": [
-                "--checkpoint-path", "${workspaceFolder}/checkpoints/multiwalker/PPO_2025-12-11_20-59-37/PPO_multiwalker_ebf86_00000_0_entropy_coeff=0.0050,gamma=0.9900,lr=0.0003,minibatch_size=4096,num_epochs=10,train_batch_size=30720_2025-12-11_20-59-37/checkpoint_000006",
-                "--n-episodes", "10",
+                "--checkpoint-path", "${workspaceFolder}/checkpoints/multiwalker/PPO_2025-12-12_19-49-50/PPO_multiwalker_56804_00000_0_clip_param=0.2000,entropy_coeff=0.0150,gamma=0.9900,lambda=0.9500,lr=0.0003,minibatch_size=1024,num__2025-12-12_19-49-50/checkpoint_000023",
+                "--n-episodes", "5",
                 "--mode", "shared",
+                "--stacked-frames", "4",
                 "--n-walkers", "3",
             ],
             "env": {
-                "PYTHONPATH": "${workspaceFolder}/src"
+                "PYTHONPATH": "${workspaceFolder}/src:${PYTHONPATH}"
             }
         },
         {

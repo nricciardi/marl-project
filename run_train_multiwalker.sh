@@ -21,19 +21,24 @@ checkpoint_dir=$1
 python3 -O ./src/multiwalker/train.py \
     --mode shared \
     --checkpoint-dir $checkpoint_dir \
-    --iters 300 \
+    --iters 200 \
     --save-interval 10 \
     --env-runners 6 \
-    --num-envs-per-env-runner 20 \
+    --num-envs-per-env-runner 10 \
     --num-cpus-per-env-runner 1 \
     --num-gpus-per-env-runner 0 \
-    --lr 0.0003 \
+    --stacked-frames 4 \
+    --observation-filter MeanStdFilter \
+    --lr 5e-5 \
     --gamma 0.99 \
-    --training-batch-size 30720 \
+    --clip-param 0.1 \
+    --lambda 0.95 \
+    --training-batch-size 5000 \
     --epochs 10 \
     --num-learners 1 \
     --num-gpus-per-learner 0.5 \
     --num-cpus-per-learner 1 \
-    --entropy-coeff 0.005 \
-    --minibatch-size 4096 \
+    --entropy-coeff 0.01 \
+    --minibatch-size 500 \
+    --parallel-env \
     --n-walkers 3

@@ -30,7 +30,10 @@ def apply_environment_config(config: PPOConfig, args: EnvSpecificArgs, env_name:
         env_name,
         env_config={
             "n_walkers": args.n_walkers,
+            "parallel": args.parallel_env,
+            "stacked_frames": args.stacked_frames,
         },
+        clip_rewards=args.clip_rewards,
     )
 
     return config
@@ -45,14 +48,6 @@ def apply_policy_config(config: PPOConfig, mode: str) -> PPOConfig:
 
 def get_train_ppo_config(args: TrainingArgs, env_name: str) -> PPOConfig:
     config = initialize_base_training_ppo_from_args(args)
-    config = apply_environment_config(config, args, env_name)
-    config = apply_policy_config(config, args.mode)
-
-    return config
-
-
-def get_eval_ppo_config(args: EvalArgs, env_name: str) -> PPOConfig:
-    config = initialize_base_evaluation_ppo_from_args()
     config = apply_environment_config(config, args, env_name)
     config = apply_policy_config(config, args.mode)
 

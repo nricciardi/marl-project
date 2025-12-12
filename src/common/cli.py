@@ -2,6 +2,10 @@ from dataclasses import field, dataclass
 from typing import List, Literal, Optional, Union
 
 
+@dataclass(kw_only=True)
+class CommonEnvArgs:
+    clip_rewards: bool = field(default=True, metadata={"help": "Whether to clip rewards"})
+
 
 @dataclass(kw_only=True)
 class CommonTrainingArgs:
@@ -32,6 +36,10 @@ class CommonTrainingArgs:
     epochs: List[int] = field(metadata={"help": "SGD epochs per iter", "nargs": "+"})
     entropy_coeff: List[float] = field(metadata={"help": "Entropy coefficient(s)", "nargs": "+"})
     minibatch_size: List[int] = field(metadata={"help": "Minibatch size(s) for SGD", "nargs": "+"})
+    observation_filter: Literal["NoFilter", "MeanStdFilter"] = field(default="NoFilter", metadata={"help": "Observation filter to use"})
+    lambda_: List[float] = field(metadata={"args": ["--lambda"], "help": "Lambda", "nargs": "+"})
+    clip_param: List[float] = field(metadata={"help": "Clip param(s)", "nargs": "+"})
+
 
 
 @dataclass(kw_only=True)
@@ -39,5 +47,5 @@ class CommonEvalArgs:
     """
     Base arguments for evaluation.
     """
-    checkpoint_path: Optional[str] = field(default=None, metadata={"help": "Path to the checkpoint to evaluate"})
+    checkpoint_path: str = field(metadata={"help": "Path to the checkpoint to evaluate"})
     n_episodes: int = field(default=10, metadata={"help": "Number of episodes to evaluate"})

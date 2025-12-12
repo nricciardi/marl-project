@@ -164,3 +164,180 @@ python3 -O ./src/multiwalker/train.py \
 ```
 
 ![](5.png)
+
+
+### 6
+
+Complex physic
+
+```
+model={
+    "fcnet_hiddens": [256, 256],
+    "fcnet_activation": "tanh",
+    "vf_share_layers": False,
+}
+```
+
+```
+python3 -O ./src/multiwalker/train.py \
+    --mode shared \
+    --checkpoint-dir $checkpoint_dir \
+    --iters 300 \
+    --save-interval 10 \
+    --env-runners 6 \
+    --num-envs-per-env-runner 20 \
+    --num-cpus-per-env-runner 1 \
+    --num-gpus-per-env-runner 0 \
+    --observation-filter MeanStdFilter \
+    --lr 3e-4 \
+    --gamma 0.99 \
+    --clip-param 0.2 \
+    --lambda 0.95 \
+    --training-batch-size 30720 \
+    --epochs 10 \
+    --num-learners 1 \
+    --num-gpus-per-learner 0.5 \
+    --num-cpus-per-learner 1 \
+    --entropy-coeff 0.01 \
+    --minibatch-size 4096 \
+    --parallel-env \
+    --n-walkers 3
+```
+
+![](6.png)
+
+
+### 7
+
+```
+model={
+    "fcnet_hiddens": [256, 256],
+    "fcnet_activation": "tanh",
+    "vf_share_layers": False,
+}
+```
+
+```
+python3 -O ./src/multiwalker/train.py \
+    --mode shared \
+    --checkpoint-dir $checkpoint_dir \
+    --iters 300 \
+    --save-interval 10 \
+    --env-runners 6 \
+    --num-envs-per-env-runner 20 \
+    --num-cpus-per-env-runner 1 \
+    --num-gpus-per-env-runner 0 \
+    --stacked-frames 4 \
+    --observation-filter MeanStdFilter \
+    --lr 3e-4 \
+    --gamma 0.99 \
+    --clip-param 0.2 \
+    --lambda 0.95 \
+    --training-batch-size 30720 \
+    --epochs 10 \
+    --num-learners 1 \
+    --num-gpus-per-learner 0.5 \
+    --num-cpus-per-learner 1 \
+    --entropy-coeff 0.01 \
+    --minibatch-size 4096 \
+    --parallel-env \
+    --n-walkers 3
+```
+
+![](7.png)
+
+
+### 8
+
+```
+python3 -O ./src/multiwalker/train.py \
+    --mode shared \
+    --checkpoint-dir $checkpoint_dir \
+    --iters 200 \
+    --save-interval 10 \
+    --env-runners 6 \
+    --num-envs-per-env-runner 20 \
+    --num-cpus-per-env-runner 1 \
+    --num-gpus-per-env-runner 0 \
+    --stacked-frames 4 \
+    --observation-filter MeanStdFilter \
+    --lr 3e-4 \
+    --gamma 0.99 \
+    --clip-param 0.2 \
+    --lambda 0.95 \
+    --training-batch-size 16384 \
+    --epochs 10 \
+    --num-learners 1 \
+    --num-gpus-per-learner 0.5 \
+    --num-cpus-per-learner 1 \
+    --entropy-coeff 0.01 \
+    --minibatch-size 1024 \
+    --parallel-env \
+    --n-walkers 3
+```
+
+![](8.png)
+
+
+### 9
+
+```
+python3 -O ./src/multiwalker/train.py \
+    --mode shared \
+    --checkpoint-dir $checkpoint_dir \
+    --iters 300 \
+    --save-interval 10 \
+    --env-runners 6 \
+    --num-envs-per-env-runner 20 \
+    --num-cpus-per-env-runner 1 \
+    --num-gpus-per-env-runner 0 \
+    --stacked-frames 4 \
+    --observation-filter MeanStdFilter \
+    --lr 3e-4 \
+    --gamma 0.99 \
+    --clip-param 0.2 \
+    --lambda 0.95 \
+    --training-batch-size 16384 \
+    --epochs 10 \
+    --num-learners 1 \
+    --num-gpus-per-learner 0.5 \
+    --num-cpus-per-learner 1 \
+    --entropy-coeff 0.015 \
+    --minibatch-size 1024 \
+    --parallel-env \
+    --n-walkers 3
+```
+
+![](9.png)
+
+
+## 10
+
+```
+python3 -O ./src/multiwalker/train.py \
+    --mode shared \
+    --checkpoint-dir $checkpoint_dir \
+    --iters 200 \
+    --save-interval 10 \
+    --env-runners 6 \
+    --num-envs-per-env-runner 10 \
+    --num-cpus-per-env-runner 1 \
+    --num-gpus-per-env-runner 0 \
+    --stacked-frames 4 \
+    --observation-filter MeanStdFilter \
+    --lr 5e-5 \
+    --gamma 0.99 \
+    --clip-param 0.1 \
+    --lambda 0.95 \
+    --training-batch-size 5000 \
+    --epochs 10 \
+    --num-learners 1 \
+    --num-gpus-per-learner 0.5 \
+    --num-cpus-per-learner 1 \
+    --entropy-coeff 0.01 \
+    --minibatch-size 500 \
+    --parallel-env \
+    --n-walkers 3
+```
+
+![](10.png)

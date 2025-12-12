@@ -1,11 +1,12 @@
 import ray
 import logging
+from evaluate.visualize import visualize
+from evaluate.simulate import simulate, plot_simulation_results
 from ray.tune.registry import register_env
-from eval.visualize import visualize
 from multiwalker.environment import environment_creator
-from multiwalker.ppo import get_eval_ppo_config
 from multiwalker.cli import EvalArgs
 from argparse_dataclass import ArgumentParser
+from ray.rllib.algorithms.algorithm import Algorithm
 
 
 logging.basicConfig(level=logging.INFO)
@@ -18,31 +19,26 @@ if __name__ == "__main__":
     logging.info("Initializing Ray...")
     ray.init()
 
-    logging.info("Registering Multiwalker environment...")
     env_name = "multiwalker"
     register_env(env_name, lambda config: environment_creator(**config))
     
-    config = get_eval_ppo_config(
-        args=args,
-        env_name=env_name,
-    )
-
-    algo = config.build_algo()
-
-    if args.checkpoint_path:
-        logging.info(f"Restoring checkpoint from {args.checkpoint_path}...")
-        algo.restore(args.checkpoint_path)
+    logging.info(f"Restoring checkpoint from {args.checkpoint_path}...")
+    algo = Algorithm.from_checkpoint(args.checkpoint_path)
 
     env = environment_creator(
         n_walkers=args.n_walkers,
+        parallel=args.parallel_env,
+        stacked_frames=args.stacked_frames,
         render_mode="human",
     )
 
-    visualize(
+    results = simulate(
         algo,
         env,
         n_episodes=args.n_episodes,
     )
+
+    plot_simulation_results(results)
 
     
 

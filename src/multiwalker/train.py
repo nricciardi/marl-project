@@ -1,12 +1,14 @@
 import os
 import ray
 import logging
+from ray import tune
 from ray.tune.registry import register_env
 from common.tuner import initialize_base_tuner
 from argparse_dataclass import ArgumentParser
 from multiwalker.cli import TrainingArgs
 from multiwalker.environment import environment_creator
 from multiwalker.ppo import get_train_ppo_config
+from ray.rllib.algorithms.algorithm import Algorithm
 
 
 logging.basicConfig(level=logging.INFO)
@@ -26,20 +28,30 @@ if __name__ == "__main__":
     env_name = "multiwalker"
     register_env(env_name, lambda config: environment_creator(**config))
 
-    config = (get_train_ppo_config(args, env_name)
-        # .training(
-        #     model={
-        #         "fcnet_hiddens": [256, 256],
-        #         "fcnet_activation": "relu",
-        #     }
-        # )
-    )
     
-    algo = config.build_algo()
 
     if args.from_checkpoint:
         logging.info(f"Restoring from checkpoint directory {args.from_checkpoint}...")
-        algo.restore(args.from_checkpoint)
+        algo = Algorithm.from_checkpoint(args.from_checkpoint)
+        config = algo.config
+
+        if config is None:
+            raise ValueError("Restored algorithm has no config.")
+
+    else:
+        logging.info("No checkpoint directory provided, training from scratch.")
+        config = (get_train_ppo_config(args, env_name)
+            .training(
+                model={
+                    "fcnet_hiddens": [256, 256],
+                    "fcnet_activation": args.fcnet_activation,
+                    "vf_share_layers": args.vf_share_layers,
+                    "kl_coeff": tune.grid_search(args.kl_coeff),
+                }
+            )
+        )
+        
+        algo = config.build_algo()
 
     param_space = config.to_dict()
 

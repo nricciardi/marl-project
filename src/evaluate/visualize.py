@@ -3,7 +3,6 @@ from ray.rllib.algorithms.algorithm import Algorithm
 import logging
 
 
-
 def visualize(
     algo: Algorithm, 
     env,
@@ -36,15 +35,15 @@ def visualize(
                 policy_id = policy_mapping_fn(agent_id)
 
                 rl_module = algo.get_module(policy_id)
-
-                fwd_ins = {"obs": torch.Tensor([agent_obs])}
-                fwd_outputs = rl_module.forward_inference(fwd_ins)
-                action_dist_class = rl_module.get_inference_action_dist_cls()
-                action_dist = action_dist_class.from_logits(
-                    fwd_outputs["action_dist_inputs"]
-                )
-                action = action_dist.sample()[0].numpy()
-                actions[agent_id] = action
+                with torch.no_grad():
+                    fwd_ins = {"obs": torch.Tensor([agent_obs])}
+                    fwd_outputs = rl_module.forward_inference(fwd_ins)
+                    action_dist_class = rl_module.get_inference_action_dist_cls()
+                    action_dist = action_dist_class.from_logits(
+                        fwd_outputs["action_dist_inputs"]
+                    )
+                    action = action_dist.sample()[0].numpy()
+                    actions[agent_id] = action
 
             logging.info(f"Actions taken: {actions}")
 
