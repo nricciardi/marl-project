@@ -14,5 +14,6 @@ gputil
 wandb
 ipywidgets
 vmas
+DSSE
 # debugpy
 # ray[default]

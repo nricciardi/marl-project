@@ -145,3 +145,62 @@ rl_module_specs={
 
 
 
+## Shared CNN
+
+### 1
+
+```
+python3 -O ./src/connect_four/train.py \
+    --seed 42 \
+    --mode shared_cnn \
+    --checkpoint-dir $checkpoint_dir \
+    --iters 1000 \
+    --save-interval 10 \
+    --env-runners 6 \
+    --num-envs-per-env-runner 20 \
+    --num-cpus-per-env-runner 1 \
+    --num-gpus-per-env-runner 0 \
+    --lr 1e-4 \
+    --gamma 0.99 \
+    --clip-param 0.3 \
+    --lambda 0.95 \
+    --training-batch-size 5000 \
+    --epochs 10 \
+    --num-learners 1 \
+    --num-gpus-per-learner 0.5 \
+    --num-cpus-per-learner 1 \
+    --entropy-coeff 0.01 \
+    --minibatch-size 500
+```
+
+![](shared_cnn_1.png)
+
+Win is more important than block opponent's win, maybe due to wrong strategy: 1v1 real-time instead of freezed version.
+
+## Shared CNNv2
+
+```
+python3 -O ./src/connect_four/train.py \
+    --seed 42 \
+    --mode shared_cnn \
+    --checkpoint-dir $checkpoint_dir \
+    --iters 500 \
+    --save-interval 10 \
+    --env-runners 6 \
+    --num-envs-per-env-runner 20 \
+    --num-cpus-per-env-runner 1 \
+    --num-gpus-per-env-runner 0 \
+    --lr 1e-4 \
+    --gamma 0.9999 \
+    --clip-param 0.3 \
+    --lambda 0.95 \
+    --training-batch-size 5000 \
+    --epochs 10 \
+    --num-learners 1 \
+    --num-gpus-per-learner 0.5 \
+    --num-cpus-per-learner 1 \
+    --entropy-coeff 0.01 \
+    --minibatch-size 500
+```
+
+![](shared_cnn_v2_1.png)

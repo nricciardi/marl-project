@@ -89,6 +89,8 @@ def simulate(
                 agent_rewards[agent_id] = agent_rewards.get(agent_id, 0) + reward
 
             if all(terminations.values()) or all(truncations.values()):
+                if sleep_time > 0:
+                    time.sleep(sleep_time)
                 break
         
         stats = EpisodeStats(

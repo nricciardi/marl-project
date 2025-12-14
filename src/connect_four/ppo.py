@@ -11,21 +11,6 @@ from connect_four.module.biased_random_module import BiasedRandomConnect4RLModul
 from connect_four.module.mlp_module import Connect4MlpRLModule
 
 
-# class Connect4Callbacks(DefaultCallbacks):
-
-#     def on_episode_end(self, *, episode, metrics_logger, **kwargs):
-        
-#         # print("on_episode_end called")
-#         # print(episode)
-#         # print(dir(episode))
-#         # print(episode.get_return())
-#         # print(episode.get_rewards())
-
-#         for player_id, rewards in episode.get_rewards().items():
-#             for reward in rewards:
-#                 metrics_logger.log_value(f"{player_id}_rewards", reward)
-
-
 
 
 def apply_environment_config(config: PPOConfig, args: EnvSpecificArgs, env_name: str) -> PPOConfig:
@@ -41,19 +26,14 @@ def apply_environment_config(config: PPOConfig, args: EnvSpecificArgs, env_name:
 
 def apply_policy_config(config: PPOConfig, mode: str) -> PPOConfig:
 
-    config = config
-
     if mode == "shared_cnn":
         return (config
                     .rl_module(
-                        rl_module_spec=MultiRLModuleSpec(
-                            rl_module_specs={
-                                "custom_cnn": RLModuleSpec(
-                                    module_class=Connect4CnnRLModule,
-                                    model_config={
-                                        "cnn_layers": [32, 64, 128],
-                                    }
-                                ),
+                        rl_module_spec=RLModuleSpec(
+                            module_class=Connect4CnnRLModule,
+                            model_config={
+                                "cnn_layers": [32, 64, 128],
+                                "mlp_layers": [256, 256],
                             }
                         )   
                     )
@@ -74,6 +54,7 @@ def apply_policy_config(config: PPOConfig, mode: str) -> PPOConfig:
                                     module_class=Connect4CnnRLModule,
                                     model_config={
                                         "cnn_layers": [32, 64, 128],
+                                        "mlp_layers": [256, 256],
                                     }
                                 ),
                                 "custom_biased_random": RLModuleSpec(
@@ -101,6 +82,7 @@ def apply_policy_config(config: PPOConfig, mode: str) -> PPOConfig:
                                 module_class=Connect4CnnRLModule,
                                 model_config={
                                     "cnn_layers": [32, 64, 128],
+                                    "mlp_layers": [256, 256],
                                 }
                             ),
                             "custom_mlp": RLModuleSpec(

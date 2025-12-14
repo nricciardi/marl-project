@@ -36,6 +36,7 @@ def apply_environment_config(config: PPOConfig, args: EnvSpecificArgs, env_name:
             "ball_radius": args.ball_radius,
             "wall_length": args.wall_length,
             "stacked_frames": args.stacked_frames,
+            "continuous_actions": args.continuous_actions,
         },
         clip_rewards=args.clip_rewards,
     )

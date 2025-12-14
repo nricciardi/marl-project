@@ -18,24 +18,24 @@ export PYTHONPATH=./src:$PYTHONPATH
 
 checkpoint_dir=$1
 
-python3 -O ./src/connect_four/train.py \
+python3 -O ./src/dsse_search/train.py \
     --seed 42 \
     --mode shared_cnn \
     --checkpoint-dir $checkpoint_dir \
-    --iters 500 \
+    --iters 200 \
     --save-interval 10 \
     --env-runners 6 \
     --num-envs-per-env-runner 20 \
     --num-cpus-per-env-runner 1 \
     --num-gpus-per-env-runner 0 \
     --lr 1e-4 \
-    --gamma 0.9999 \
+    --gamma 0.995 \
     --clip-param 0.3 \
     --lambda 0.95 \
-    --training-batch-size 5000 \
+    --training-batch-size 50000 \
     --epochs 10 \
     --num-learners 1 \
     --num-gpus-per-learner 0.5 \
     --num-cpus-per-learner 1 \
     --entropy-coeff 0.01 \
-    --minibatch-size 500
+    --minibatch-size 5000

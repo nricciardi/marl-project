@@ -10,7 +10,7 @@ VMAS: https://github.com/proroklab/VectorizedMultiAgentSimulator?tab=readme-ov-f
 
 Multiwalker: https://pettingzoo.farama.org/environments/sisl/multiwalker/
 
-
+DSSE: https://pfeinsper.github.io/drone-swarm-search/
 
 ## WanDB
 

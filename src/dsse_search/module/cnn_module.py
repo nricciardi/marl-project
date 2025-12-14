@@ -11,7 +11,7 @@ from ray.rllib.utils.framework import try_import_torch
 from ray.rllib.utils.typing import TensorType
 
 
-class Connect4CnnRLModule(TorchRLModule, ValueFunctionAPI):
+class DsseSearchCnnRLModule(TorchRLModule, ValueFunctionAPI):
     """
     Custom PyTorch RLModule for Connect Four (New API Stack).
     Handles CNN processing and Action Masking.
@@ -74,6 +74,9 @@ class Connect4CnnRLModule(TorchRLModule, ValueFunctionAPI):
         Helper function to process inputs and compute logits + mask.
         Used by both _forward and _forward_train.
         """
+
+        print("Batch contents:")
+        print(batch)
         
         obs_data = batch[Columns.OBS]
         
