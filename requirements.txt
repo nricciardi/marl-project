@@ -7,9 +7,12 @@ seaborn
 argparse-dataclass
 ray[rllib]
 mpe2
-pettingzoo[butterfly, sisl]
+pettingzoo[butterfly, sisl, classic]
 supersuit
 gymnasium[atari,accept-rom-license,mujoco]
 gputil
 wandb
 ipywidgets
+vmas
+# debugpy
+# ray[default]

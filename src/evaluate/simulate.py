@@ -3,9 +3,12 @@ import seaborn as sns
 import numpy as np
 import torch
 from ray.rllib.algorithms.algorithm import Algorithm
+from ray.rllib.core.columns import Columns
+from ray.rllib.utils.numpy import convert_to_numpy, softmax
 import logging
 from dataclasses import dataclass
 from typing import Dict, List, Optional
+import time
 
 
 @dataclass
@@ -20,6 +23,8 @@ def simulate(
     algo: Algorithm, 
     env,
     n_episodes: int,
+    explore: bool,
+    sleep_time: float = 0.0
 ) -> List[EpisodeStats]:
     
     logging.info(f"Starting simulation for {n_episodes} episodes...")
@@ -42,26 +47,38 @@ def simulate(
         agent_rewards = {agent_id: 0.0 for agent_id in env.agents}
         
         while True:
+            if sleep_time > 0:
+                time.sleep(sleep_time)
+
             actions = {}
             for agent_id, agent_obs in observations.items():
                 policy_id = policy_mapping_fn(agent_id, episode_num) 
                 
                 rl_module = algo.get_module(policy_id)
 
-                fwd_ins = {"obs": torch.Tensor([agent_obs])}
+                if rl_module is None:
+                    raise ValueError(f"RL module for policy ID '{policy_id}' not found.")
+
+                inputs = {
+                    "obs": torch.Tensor([agent_obs]) if not isinstance(agent_obs, dict) else agent_obs,
+                }
                 
                 with torch.no_grad():
-                    fwd_outputs = rl_module.forward_inference(fwd_ins)
-                    action_dist_class = rl_module.get_inference_action_dist_cls()
-                    action_dist = action_dist_class.from_logits(
-                        fwd_outputs["action_dist_inputs"]
-                    )
+                    if explore:
+                        outputs = rl_module.forward_exploration(inputs)
+                        action_dist = rl_module.get_exploration_action_dist_cls().from_logits(outputs[Columns.ACTION_DIST_INPUTS])
+                    else:
+                        outputs = rl_module.forward_inference(inputs)
+                        action_dist = rl_module.get_inference_action_dist_cls().from_logits(outputs[Columns.ACTION_DIST_INPUTS])
 
-                    action = action_dist.sample()[0].numpy()
+                    action = action_dist.sample().squeeze(0).numpy()
                 
                 actions[agent_id] = action
 
+                logging.info(f"Agent: {agent_id}, Policy: {policy_id}, Action: {action}")
+
             observations, rewards, terminations, truncations, infos = env.step(actions)
+            logging.info(f"Step Rewards: {rewards}")
             
             # Aggregate rewards
             step_total_reward = sum(rewards.values())

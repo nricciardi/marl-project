@@ -1,5 +1,7 @@
-from ray.rllib.algorithms.ppo import PPOConfig
+import logging
+from ray.rllib.algorithms.ppo import PPOConfig, PPO
 
+from ray.rllib.algorithms.algorithm import Algorithm
 from common.cli import CommonTrainingArgs
 
 
@@ -18,6 +20,11 @@ def initialize_base_training_ppo_from_args(args: CommonTrainingArgs) -> PPOConfi
                 num_learners=args.num_learners,
                 num_gpus_per_learner=args.num_gpus_per_learner,
                 num_cpus_per_learner=args.num_cpus_per_learner,
+            )
+            .evaluation(
+                evaluation_interval=args.evaluation_interval,
+                evaluation_duration=args.evaluation_duration,
+                evaluation_duration_unit=args.evaluation_duration_unit,
             )
         )
     

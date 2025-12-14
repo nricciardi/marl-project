@@ -1,15 +1,15 @@
 import os
 import ray
 import logging
-from ray import tune
 from ray.tune.registry import register_env
 from common.set_seed import set_global_seed
 from common.tuner import initialize_base_tuner
 from argparse_dataclass import ArgumentParser
-from multiwalker.cli import TrainingArgs
-from multiwalker.environment import environment_creator
-from multiwalker.ppo import get_train_ppo_config
 from ray.rllib.algorithms.algorithm import Algorithm
+
+from vmas_buzz_wire.cli import TrainingArgs
+from vmas_buzz_wire.environment import environment_creator
+from vmas_buzz_wire.ppo import get_train_ppo_config
 
 
 logging.basicConfig(level=logging.INFO)
@@ -26,11 +26,10 @@ if __name__ == "__main__":
     ray.init()
 
     logging.info("Registering Multiwalker environment...")
-    env_name = "multiwalker"
+    env_name = "vmas_buzz_wire"
     register_env(env_name, lambda config: environment_creator(**config))
 
     
-
     if args.from_checkpoint:
         logging.info(f"Restoring from checkpoint directory {args.from_checkpoint}...")
         algo = Algorithm.from_checkpoint(args.from_checkpoint)
@@ -42,22 +41,7 @@ if __name__ == "__main__":
     else:
         logging.info("No checkpoint directory provided, training from scratch.")
 
-        model = {
-            "fcnet_hiddens": args.fcnet_hiddens,
-            "fcnet_activation": args.fcnet_activation,
-            "vf_share_layers": args.vf_share_layers,
-        }
-
-        if args.kl_coeff is not None:
-            model["kl_coeff"] = tune.grid_search(args.kl_coeff)
-
-        logging.info(f"Model configuration: {model}")
-
-        config = (get_train_ppo_config(args, env_name)
-            .training(
-                model=model
-            )
-        )
+        config = get_train_ppo_config(args, env_name)
 
         if args.seed is not None:
             config = config.debugging(seed=args.seed)

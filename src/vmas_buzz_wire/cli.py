@@ -6,10 +6,13 @@ from common.cli import CommonEnvArgs, CommonEvalArgs, CommonTrainingArgs
 
 @dataclass
 class EnvSpecificArgs(CommonEnvArgs):
-    n_walkers: int
-    parallel_env: bool
+    n_agents: int
+    wall_length: float
+    agent_radius: float
+    agent_spacing: float
+    ball_radius: float
     stacked_frames: int
-
+    continuous_actions: bool
 
 @dataclass
 class TrainingArgs(CommonTrainingArgs, EnvSpecificArgs):

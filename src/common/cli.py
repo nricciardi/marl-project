@@ -8,12 +8,18 @@ class CommonEnvArgs:
 
 
 @dataclass(kw_only=True)
-class CommonTrainingArgs:
+class CommonArgs:
+    seed: Optional[int] = field(default=None, metadata={"help": "Random seed for training"})
+
+
+@dataclass(kw_only=True)
+class CommonTrainingArgs(CommonArgs):
     """
     Base arguments for training.
     Hyperparameters are Lists to enable Ray Tune Grid Search.
     If a single value is desired, simply pass one value.
     """
+
     # System settings
     checkpoint_dir: str = field(metadata={"help": "Directory to store results"})
     env_runners: int = field(metadata={"help": "Number of rollout workers"})
@@ -40,12 +46,19 @@ class CommonTrainingArgs:
     lambda_: List[float] = field(metadata={"args": ["--lambda"], "help": "Lambda", "nargs": "+"})
     clip_param: List[float] = field(metadata={"help": "Clip param(s)", "nargs": "+"})
 
+    # Evaluation settings
+    evaluation_interval: int = field(default=0, metadata={"help": "Evaluate every N iterations. 0 to disable."})
+    evaluation_duration: int = field(default=10, metadata={"help": "Number of episodes for each evaluation."})
+    evaluation_duration_unit: Literal["episodes", "timesteps"] = field(default="episodes", metadata={"help": "Unit for evaluation duration."})
+
 
 
 @dataclass(kw_only=True)
-class CommonEvalArgs:
+class CommonEvalArgs(CommonArgs):
     """
     Base arguments for evaluation.
     """
     checkpoint_path: str = field(metadata={"help": "Path to the checkpoint to evaluate"})
     n_episodes: int = field(default=10, metadata={"help": "Number of episodes to evaluate"})
+    explore: bool = field(default=False, metadata={"help": "Explore during evaluation"})
+    sleep_time: float = field(default=0.0, metadata={"help": "Sleep time between steps (in seconds)"})

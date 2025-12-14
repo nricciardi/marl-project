@@ -18,31 +18,24 @@ export PYTHONPATH=./src:$PYTHONPATH
 
 checkpoint_dir=$1
 
-python3 -O ./src/multiwalker/train.py \
+python3 -O ./src/connect_four/train.py \
     --seed 42 \
-    --mode shared \
+    --mode cnn_vs_mlp \
     --checkpoint-dir $checkpoint_dir \
-    --iters 200 \
+    --iters 1000 \
     --save-interval 10 \
     --env-runners 6 \
     --num-envs-per-env-runner 20 \
     --num-cpus-per-env-runner 1 \
     --num-gpus-per-env-runner 0 \
-    --stacked-frames 4 \
-    --observation-filter MeanStdFilter \
-    --fcnet-activation tanh \
-    --fcnet-hiddens 400 300 \
     --lr 1e-4 \
-    --gamma 0.995 \
+    --gamma 0.98 \
     --clip-param 0.3 \
     --lambda 0.95 \
-    --training-batch-size 50000 \
+    --training-batch-size 5000 \
     --epochs 10 \
     --num-learners 1 \
     --num-gpus-per-learner 0.5 \
     --num-cpus-per-learner 1 \
     --entropy-coeff 0.01 \
-    --minibatch-size 5000 \
-    --kl-coeff 1.0 \
-    --parallel-env \
-    --n-walkers 3
+    --minibatch-size 500

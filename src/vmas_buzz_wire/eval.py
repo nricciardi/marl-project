@@ -3,8 +3,8 @@ import logging
 from evaluate.visualize import visualize
 from evaluate.simulate import simulate, plot_simulation_results
 from ray.tune.registry import register_env
-from multiwalker.environment import environment_creator
-from multiwalker.cli import EvalArgs
+from .environment import environment_creator
+from .cli import EvalArgs
 from argparse_dataclass import ArgumentParser
 from ray.rllib.algorithms.algorithm import Algorithm
 
@@ -19,16 +19,20 @@ if __name__ == "__main__":
     logging.info("Initializing Ray...")
     ray.init()
 
-    env_name = "multiwalker"
+    env_name = "vmas_buzz_wire"
     register_env(env_name, lambda config: environment_creator(**config))
     
     logging.info(f"Restoring checkpoint from {args.checkpoint_path}...")
     algo = Algorithm.from_checkpoint(args.checkpoint_path)
 
     env = environment_creator(
-        n_walkers=args.n_walkers,
-        parallel=args.parallel_env,
+        n_agents=args.n_agents,
+        agent_radius=args.agent_radius,
+        agent_spacing=args.agent_spacing,
+        ball_radius=args.ball_radius,
+        wall_length=args.wall_length,
         stacked_frames=args.stacked_frames,
+        continuous_actions=args.continuous_actions,
         render_mode="human",
     )
 

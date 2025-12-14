@@ -6,10 +6,12 @@ from ray.tune.registry import register_env
 from common.set_seed import set_global_seed
 from common.tuner import initialize_base_tuner
 from argparse_dataclass import ArgumentParser
-from multiwalker.cli import TrainingArgs
-from multiwalker.environment import environment_creator
-from multiwalker.ppo import get_train_ppo_config
 from ray.rllib.algorithms.algorithm import Algorithm
+from ray.rllib.core.rl_module.rl_module import RLModuleSpec
+
+from connect_four.cli import TrainingArgs
+from connect_four.environment import environment_creator
+from connect_four.ppo import get_train_ppo_config
 
 
 logging.basicConfig(level=logging.INFO)
@@ -25,8 +27,8 @@ if __name__ == "__main__":
     logging.info("Initializing Ray...")
     ray.init()
 
-    logging.info("Registering Multiwalker environment...")
-    env_name = "multiwalker"
+    logging.info("Registering environment...")
+    env_name = "connect_four"
     register_env(env_name, lambda config: environment_creator(**config))
 
     
@@ -42,22 +44,7 @@ if __name__ == "__main__":
     else:
         logging.info("No checkpoint directory provided, training from scratch.")
 
-        model = {
-            "fcnet_hiddens": args.fcnet_hiddens,
-            "fcnet_activation": args.fcnet_activation,
-            "vf_share_layers": args.vf_share_layers,
-        }
-
-        if args.kl_coeff is not None:
-            model["kl_coeff"] = tune.grid_search(args.kl_coeff)
-
-        logging.info(f"Model configuration: {model}")
-
-        config = (get_train_ppo_config(args, env_name)
-            .training(
-                model=model
-            )
-        )
+        config = get_train_ppo_config(args, env_name)
 
         if args.seed is not None:
             config = config.debugging(seed=args.seed)
