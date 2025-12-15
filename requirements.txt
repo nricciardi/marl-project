@@ -13,7 +13,7 @@ gymnasium[atari,accept-rom-license,mujoco]
 gputil
 wandb
 ipywidgets
-vmas
+# vmas
 DSSE
 # debugpy
 # ray[default]
