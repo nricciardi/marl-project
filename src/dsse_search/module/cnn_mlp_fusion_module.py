@@ -114,30 +114,41 @@ class DsseSearchCnnMlpFusionRLModule(TorchRLModule, ValueFunctionAPI):
 
         drone_coordinates, probability_matrix = observation
 
-        print("Drone Coordinates:")
-        print(drone_coordinates)
-        for coord in drone_coordinates:
-            print(coord)
-            print(coord.shape)
-        print("---")
-        print("Probability Matrix:")
-        print(probability_matrix)
-        print(probability_matrix.shape)
-        print("---")
+        # # Debugging prints
+        # print("Drone Coordinates:")
+        # print(drone_coordinates)
+        # for coord in drone_coordinates:
+        #     print(coord)
+        #     print(coord.shape)
+        # print("---")
+        # print("Probability Matrix:")
+        # print(probability_matrix)
+        # print(probability_matrix.shape)
+        # print("---")
 
-        if not torch.is_tensor(drone_coordinates):
-            drone_coordinates = torch.tensor(drone_coordinates)
+        x_coordinates, y_coordinates = drone_coordinates
 
-        while drone_coordinates.dim() < 2: # Add batch dimension if missing
-            drone_coordinates = drone_coordinates.unsqueeze(0)
+        if not torch.is_tensor(x_coordinates):
+            x_coordinates = torch.tensor(x_coordinates)
+        if not torch.is_tensor(y_coordinates):
+            y_coordinates = torch.tensor(y_coordinates)
+
+        if x_coordinates.dim() == 1:  # (Batch,)
+            x_coordinates = x_coordinates.unsqueeze(-1)  # (Batch, 1)
+        if y_coordinates.dim() == 1:  # (Batch,)
+            y_coordinates = y_coordinates.unsqueeze(-1)  # (Batch, 1)
+
+        drone_coordinates = torch.cat([x_coordinates, y_coordinates], dim=-1).float()   # (Batch, n_coordinates), i.e. (Batch, 2)
 
         if not torch.is_tensor(probability_matrix):
             probability_matrix = torch.from_numpy(probability_matrix)
 
-        probability_matrix = probability_matrix.float()
+        if probability_matrix.dim() == 3: # (Batch, Rows, Cols)
+            probability_matrix = probability_matrix.unsqueeze(1)  # Add channel dimension
+        elif probability_matrix.dim() == 2: # (Rows, Cols)
+            probability_matrix = probability_matrix.unsqueeze(0).unsqueeze(0)  # Add batch and channel dimensions
 
-        while probability_matrix.dim() < 4: # Add batch dimension if missing
-            probability_matrix = probability_matrix.unsqueeze(0) 
+        probability_matrix = probability_matrix.float()     # (Batch, 1, Rows, Cols)
 
         cnn_output = self.probability_matrix_cnn(probability_matrix)
         coordinates_output = self.coordinates_mlp(drone_coordinates)
