@@ -60,7 +60,7 @@ def simulate(
                     raise ValueError(f"RL module for policy ID '{policy_id}' not found.")
 
                 inputs = {
-                    "obs": torch.Tensor([agent_obs]) if not isinstance(agent_obs, dict) else agent_obs,
+                    "obs": torch.Tensor([agent_obs]) if torch.is_tensor(agent_obs) else agent_obs,
                 }
                 
                 with torch.no_grad():

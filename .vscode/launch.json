@@ -32,7 +32,7 @@
             "program": "${workspaceFolder}/src/dsse_search/eval.py",
             "console": "integratedTerminal",
             "args": [
-                "--checkpoint-path", "${workspaceFolder}/checkpoints/connect_four/PPO_2025-12-14_16-30-42/PPO_connect_four_da505_00000_0_clip_param=0.3000,entropy_coeff=0.0100,gamma=0.9900,lambda=0.9500,lr=0.0001,minibatch_size=500,num__2025-12-14_16-30-42/checkpoint_000094",
+                "--checkpoint-path", "${workspaceFolder}/checkpoints/dsse_search/PPO_2025-12-15_14-40-40/PPO_dsse_search_a59ea_00000_0_clip_param=0.3000,entropy_coeff=0.0100,gamma=0.9950,lambda=0.9500,lr=0.0001,minibatch_size=5000,num__2025-12-15_14-40-40/checkpoint_000019",
                 "--n-episodes", "5",
                 "--sleep-time", "1"
             ],

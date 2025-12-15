@@ -16,30 +16,35 @@ class DsseSearchCnnMlpFusionRLModule(TorchRLModule, ValueFunctionAPI):
     Handles CNN processing and Action Masking.
     """
 
-    def __build_cnn(self, cnn_conv2d: List[List[int]]) -> nn.Sequential:
+    def __build_cnn(self, cnn_conv2d: List[int], cnn_strides: List[int], 
+                cnn_kernel_sizes: List[int], cnn_paddings: List[int]) -> List[nn.Module]:
+    
+        assert len(cnn_conv2d) >= 2, "cnn_conv2d must specify at least input and one output channel."
+        assert len(cnn_conv2d) == len(cnn_strides) == len(cnn_kernel_sizes) == len(cnn_paddings), \
+            "cnn_strides, cnn_kernel_sizes, and cnn_paddings must have length equal to len(cnn_conv2d)."
+
         layers = []
         
         for i in range(1, len(cnn_conv2d)):
             current_conv2d = cnn_conv2d[i - 1]
             next_conv2d = cnn_conv2d[i]
-            
+            current_kernel_size = cnn_kernel_sizes[i - 1]
+            current_stride = cnn_strides[i - 1]
+            current_padding = cnn_paddings[i - 1]
+
             layers.append(nn.Conv2d(
-                in_channels=current_conv2d[0], 
-                out_channels=next_conv2d[0], 
-                kernel_size=current_conv2d[1],
-                stride=current_conv2d[2],
-                padding=current_conv2d[3],
+                in_channels=current_conv2d, 
+                out_channels=next_conv2d, 
+                kernel_size=current_kernel_size,
+                stride=current_stride,
+                padding=current_padding,
             ))
 
             layers.append(nn.ReLU())
 
-            # TODO: Consider adding pooling layers or residual block if needed
-        
-        layers.append(nn.Flatten())
-
-        return nn.Sequential(*layers)
+        return layers
     
-    def __build_mlp(self, mlp_hiddens: List[int], input_dim: int, dropout: float) -> nn.Sequential:
+    def __build_mlp(self, mlp_hiddens: List[int], input_dim: int, dropout: float) -> List[nn.Module]:
         layers = []
         
         prev_dim = input_dim
@@ -50,13 +55,13 @@ class DsseSearchCnnMlpFusionRLModule(TorchRLModule, ValueFunctionAPI):
             
             layers.append(layer)
             layers.append(nn.ReLU())
-            
+
             prev_dim = hidden_dim
-        
+
         if dropout > 0:
             layers.append(nn.Dropout(dropout))
 
-        return nn.Sequential(*layers)
+        return layers
 
 
     @override(TorchRLModule)
@@ -70,27 +75,47 @@ class DsseSearchCnnMlpFusionRLModule(TorchRLModule, ValueFunctionAPI):
         n_coordinates = drone_coordinates.shape[0]
 
         probability_matrix_cnn_conv2d = self.model_config.get("probability_matrix_cnn_conv2d")
+        probability_matrix_cnn_strides = self.model_config.get("probability_matrix_cnn_strides")
+        probability_matrix_cnn_kernel_sizes = self.model_config.get("probability_matrix_cnn_kernel_sizes")
+        probability_matrix_cnn_paddings = self.model_config.get("probability_matrix_cnn_paddings")
 
-        self.probability_matrix_cnn = self.__build_cnn(probability_matrix_cnn_conv2d)
+        self.probability_matrix_cnn = nn.Sequential(
+            *(
+                self.__build_cnn(
+                    probability_matrix_cnn_conv2d,
+                    probability_matrix_cnn_strides,
+                    probability_matrix_cnn_kernel_sizes,
+                    probability_matrix_cnn_paddings
+                ) 
+                + [nn.Flatten()]
+            )
+        )
 
-        flattened_size = rows * cols * probability_matrix_cnn_conv2d[-1][0]
+        with torch.no_grad():
+            dummy_input = torch.zeros(1, probability_matrix_cnn_conv2d[0], rows, cols)
+            cnn_output = self.probability_matrix_cnn(dummy_input)
+            cnn_output_dim = cnn_output.shape[1]
 
         drone_coordinates_mlp_hiddens = self.model_config.get("drone_coordinates_mlp_hiddens")
         drone_coordinates_mlp_dropout = self.model_config.get("drone_coordinates_mlp_dropout", 0.0)
 
-        self.coordinates_mlp = self.__build_mlp(
-            drone_coordinates_mlp_hiddens,
-            n_coordinates,
-            drone_coordinates_mlp_dropout
+        self.coordinates_mlp = nn.Sequential(
+            *self.__build_mlp(
+                mlp_hiddens=drone_coordinates_mlp_hiddens,
+                input_dim=n_coordinates,
+                dropout=drone_coordinates_mlp_dropout
+            )
         )
 
         fusion_mlp_hiddens = self.model_config.get("fusion_mlp_hiddens")
         fusion_mlp_dropout = self.model_config.get("fusion_mlp_dropout", 0.0)
 
-        self.fusion_mlp = self.__build_mlp(
-            fusion_mlp_hiddens,
-            flattened_size + drone_coordinates_mlp_hiddens[-1],
-            fusion_mlp_dropout
+        self.fusion_mlp = nn.Sequential(
+            *self.__build_mlp(
+                mlp_hiddens=fusion_mlp_hiddens,
+                input_dim=cnn_output_dim + drone_coordinates_mlp_hiddens[-1],
+                dropout=fusion_mlp_dropout
+            )
         )
 
         fusion_output_dim = fusion_mlp_hiddens[-1]
@@ -130,8 +155,15 @@ class DsseSearchCnnMlpFusionRLModule(TorchRLModule, ValueFunctionAPI):
 
         if not torch.is_tensor(x_coordinates):
             x_coordinates = torch.tensor(x_coordinates)
+
+        if x_coordinates.dim() == 0:
+            x_coordinates = x_coordinates.unsqueeze(0)  # (1,)
+
         if not torch.is_tensor(y_coordinates):
             y_coordinates = torch.tensor(y_coordinates)
+
+        if y_coordinates.dim() == 0:
+            y_coordinates = y_coordinates.unsqueeze(0)  # (1,)
 
         if x_coordinates.dim() == 1:  # (Batch,)
             x_coordinates = x_coordinates.unsqueeze(-1)  # (Batch, 1)
