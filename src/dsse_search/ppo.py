@@ -4,7 +4,7 @@ from ray.rllib.core.rl_module.rl_module import RLModuleSpec
 
 from common.ppo import initialize_base_evaluation_ppo_from_args, initialize_base_training_ppo_from_args
 from dsse_search.cli import EnvSpecificArgs, EvalArgs, TrainingArgs
-from dsse_search.module.cnn_module import DsseSearchCnnRLModule
+from dsse_search.module.cnn_mlp_fusion_module import DsseSearchCnnMlpFusionRLModule
 
 
 def apply_environment_config(config: PPOConfig, args: EnvSpecificArgs, env_name: str) -> PPOConfig:
@@ -19,14 +19,23 @@ def apply_environment_config(config: PPOConfig, args: EnvSpecificArgs, env_name:
 
 
 def apply_policy_config(config: PPOConfig, mode: str) -> PPOConfig:
-    if mode == "shared_cnn":
+    if mode == "shared":
         return (config
                     .rl_module(
                         rl_module_spec=RLModuleSpec(
-                            module_class=DsseSearchCnnRLModule,
+                            module_class=DsseSearchCnnMlpFusionRLModule,
                             model_config={
-                                "cnn_layers": [32, 64, 128],
-                                "mlp_layers": [256, 256],
+                                "probability_matrix_cnn_conv2d": [
+                                    # in_channels, kernel_size, stride, padding
+                                    [1, 3, 1, 1],
+                                    [16, 3, 1, 1],
+                                    [32, 3, 1, 1],
+                                    [64, 3, 1, 1],
+                                ],
+                                "drone_coordinates_mlp_hiddens": [16, 32],
+                                "drone_coordinates_mlp_dropout": 0,
+                                "fusion_mlp_hiddens": [128, 64],
+                                "fusion_mlp_dropout": 0.2,
                             }
                         )   
                     )

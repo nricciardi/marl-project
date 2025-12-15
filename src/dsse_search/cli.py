@@ -11,7 +11,7 @@ class EnvSpecificArgs(CommonEnvArgs):
 
 @dataclass
 class TrainingArgs(CommonTrainingArgs, EnvSpecificArgs):
-    mode: Literal["independent", "shared_cnn"]
+    mode: Literal["independent", "shared"]
     # fcnet_hiddens: List[int] = field(metadata={"help": "Number of hidden units per layer", "nargs": "+"})
     # fcnet_activation: str
     # vf_share_layers: bool

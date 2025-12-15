@@ -20,7 +20,7 @@ checkpoint_dir=$1
 
 python3 -O ./src/dsse_search/train.py \
     --seed 42 \
-    --mode shared_cnn \
+    --mode shared \
     --checkpoint-dir $checkpoint_dir \
     --iters 200 \
     --save-interval 10 \
