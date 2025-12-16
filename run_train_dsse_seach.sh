@@ -22,7 +22,7 @@ python3 -O ./src/dsse_search/train.py \
     --seed 42 \
     --mode shared \
     --checkpoint-dir $checkpoint_dir \
-    --iters 200 \
+    --iters 2000 \
     --save-interval 10 \
     --env-runners 6 \
     --num-envs-per-env-runner 10 \
@@ -32,13 +32,13 @@ python3 -O ./src/dsse_search/train.py \
     --gamma 0.995 \
     --clip-param 0.3 \
     --lambda 0.95 \
-    --training-batch-size 5000 \
+    --training-batch-size 30720 \
+    --minibatch-size 3072 \
     --epochs 10 \
     --num-learners 1 \
     --num-gpus-per-learner 0.5 \
     --num-cpus-per-learner 1 \
     --entropy-coeff 0.01 \
-    --minibatch-size 500 \
     --probability-matrix-cnn-conv2d 1 16 32 64 \
     --probability-matrix-cnn-kernel-sizes 3 3 3 3 \
     --probability-matrix-cnn-strides 2 2 2 2 \
@@ -46,8 +46,8 @@ python3 -O ./src/dsse_search/train.py \
     --drone-coordinates-mlp-hiddens 16 32 \
     --drone-coordinates-mlp-dropout 0.0 \
     --fusion-mlp-hiddens 128 64 \
-    --fusion-mlp-dropout 0.2 \
-    --grid-size 40 \
+    --fusion-mlp-dropout 0.0 \
+    --grid-size 30 \
     --timestep-limit 100 \
     --person-amount 1 \
     --dispersion-inc 0.1 \

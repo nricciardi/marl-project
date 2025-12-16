@@ -9,59 +9,14 @@ from ray.rllib.core.rl_module.torch import TorchRLModule
 from ray.rllib.utils.annotations import override
 from ray.rllib.utils.typing import TensorType
 
+from common.network import build_cnn, build_mlp
+
 
 class DsseSearchCnnMlpFusionRLModule(TorchRLModule, ValueFunctionAPI):
     """
     Custom PyTorch RLModule for Connect Four (New API Stack).
     Handles CNN processing and Action Masking.
     """
-
-    def __build_cnn(self, cnn_conv2d: List[int], cnn_strides: List[int], 
-                cnn_kernel_sizes: List[int], cnn_paddings: List[int]) -> List[nn.Module]:
-    
-        assert len(cnn_conv2d) >= 2, "cnn_conv2d must specify at least input and one output channel."
-        assert len(cnn_conv2d) == len(cnn_strides) == len(cnn_kernel_sizes) == len(cnn_paddings), \
-            "cnn_strides, cnn_kernel_sizes, and cnn_paddings must have length equal to len(cnn_conv2d)."
-
-        layers = []
-        
-        for i in range(1, len(cnn_conv2d)):
-            current_conv2d = cnn_conv2d[i - 1]
-            next_conv2d = cnn_conv2d[i]
-            current_kernel_size = cnn_kernel_sizes[i - 1]
-            current_stride = cnn_strides[i - 1]
-            current_padding = cnn_paddings[i - 1]
-
-            layers.append(nn.Conv2d(
-                in_channels=current_conv2d, 
-                out_channels=next_conv2d, 
-                kernel_size=current_kernel_size,
-                stride=current_stride,
-                padding=current_padding,
-            ))
-
-            layers.append(nn.ReLU())
-
-        return layers
-    
-    def __build_mlp(self, mlp_hiddens: List[int], input_dim: int, dropout: float) -> List[nn.Module]:
-        layers = []
-        
-        prev_dim = input_dim
-        for hidden_dim in mlp_hiddens:
-            layer = nn.Linear(prev_dim, hidden_dim)
-            nn.init.orthogonal_(layer.weight, gain=np.sqrt(2))
-            nn.init.constant_(layer.bias, 0.0)
-            
-            layers.append(layer)
-            layers.append(nn.ReLU())
-
-            prev_dim = hidden_dim
-
-        if dropout > 0:
-            layers.append(nn.Dropout(dropout))
-
-        return layers
 
 
     @override(TorchRLModule)
@@ -80,14 +35,12 @@ class DsseSearchCnnMlpFusionRLModule(TorchRLModule, ValueFunctionAPI):
         probability_matrix_cnn_paddings = self.model_config.get("probability_matrix_cnn_paddings")
 
         self.probability_matrix_cnn = nn.Sequential(
-            *(
-                self.__build_cnn(
-                    probability_matrix_cnn_conv2d,
-                    probability_matrix_cnn_strides,
-                    probability_matrix_cnn_kernel_sizes,
-                    probability_matrix_cnn_paddings
-                ) 
-                + [nn.Flatten()]
+            *build_cnn(
+                probability_matrix_cnn_conv2d,
+                probability_matrix_cnn_strides,
+                probability_matrix_cnn_kernel_sizes,
+                probability_matrix_cnn_paddings,
+                flat=True
             )
         )
 
@@ -100,7 +53,7 @@ class DsseSearchCnnMlpFusionRLModule(TorchRLModule, ValueFunctionAPI):
         drone_coordinates_mlp_dropout = self.model_config.get("drone_coordinates_mlp_dropout", 0.0)
 
         self.coordinates_mlp = nn.Sequential(
-            *self.__build_mlp(
+            *build_mlp(
                 mlp_hiddens=drone_coordinates_mlp_hiddens,
                 input_dim=n_coordinates,
                 dropout=drone_coordinates_mlp_dropout
@@ -111,7 +64,7 @@ class DsseSearchCnnMlpFusionRLModule(TorchRLModule, ValueFunctionAPI):
         fusion_mlp_dropout = self.model_config.get("fusion_mlp_dropout", 0.0)
 
         self.fusion_mlp = nn.Sequential(
-            *self.__build_mlp(
+            *build_mlp(
                 mlp_hiddens=fusion_mlp_hiddens,
                 input_dim=cnn_output_dim + drone_coordinates_mlp_hiddens[-1],
                 dropout=fusion_mlp_dropout
