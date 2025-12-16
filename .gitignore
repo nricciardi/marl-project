@@ -1,6 +1,9 @@
 checkpoints/*
 !checkpoints/.gitkeep
 
+logs/*
+!logs/.gitkeep
+
 wandb/*
 !wandb/.gitkeep
 
