@@ -24,8 +24,8 @@ python3 -O ./src/dsse_search/standard/train.py \
     --checkpoint-dir $checkpoint_dir \
     --iters 200 \
     --save-interval 10 \
-    --env-runners 6 \
-    --num-envs-per-env-runner 10 \
+    --env-runners 1 \
+    --num-envs-per-env-runner 1 \
     --num-cpus-per-env-runner 1 \
     --num-gpus-per-env-runner 0 \
     --lr 1e-4 \
@@ -50,8 +50,10 @@ python3 -O ./src/dsse_search/standard/train.py \
     --grid-size 40 \
     --timestep-limit 100 \
     --person-amount 1 \
-    --person-initial-position 15 15 \
-    --person-speed 1.0 1.0 \
+    --person-initial-position-x 15 \
+    --person-initial-position-y 15 \
+    --person-speed-x 1.0 \
+    --person-speed-y 1.0 \
     --dispersion-inc 0.1 \
     --drone-amount 3 \
     --drone-speed 10 \

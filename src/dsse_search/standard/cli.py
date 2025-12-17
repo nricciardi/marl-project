@@ -9,8 +9,10 @@ class EnvSpecificArgs(CommonEnvArgs):
     grid_size: int
     timestep_limit: int
     person_amount: int
-    person_initial_position: Tuple[int, int]
-    person_speed: Tuple[float, float]
+    person_initial_position_x: int
+    person_initial_position_y: int
+    person_speed_x: float
+    person_speed_y: float
     dispersion_inc: float
     drone_amount: int
     drone_speed: int

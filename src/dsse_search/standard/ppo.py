@@ -18,6 +18,8 @@ def apply_environment_config(config: PPOConfig, args: EnvSpecificArgs, env_name:
         "drone_amount": args.drone_amount,
         "drone_speed": args.drone_speed,
         "detection_probability": args.detection_probability,
+        "person_initial_position": (args.person_initial_position_x, args.person_initial_position_y),
+        "person_speed": (args.person_speed_x, args.person_speed_y),
     }
 
     config = config.environment(
