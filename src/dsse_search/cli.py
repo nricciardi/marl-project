@@ -13,6 +13,8 @@ class EnvSpecificArgs(CommonEnvArgs):
     drone_amount: int
     drone_speed: int
     detection_probability: float
+    env_type: Literal["dsse_search", "random_person_and_drone_initial_position"]
+    
 
 
 @dataclass

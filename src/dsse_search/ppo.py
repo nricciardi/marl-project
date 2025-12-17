@@ -9,9 +9,19 @@ from dsse_search.module.cnn_mlp_fusion_module import DsseSearchCnnMlpFusionRLMod
 
 
 def apply_environment_config(config: PPOConfig, args: EnvSpecificArgs, env_name: str) -> PPOConfig:
-    config = config.environment(
-        env_name,
-        env_config={
+
+    if args.env_type == "random_person_and_drone_initial_position":        
+        env_config = {
+            "grid_size": args.grid_size,
+            "timestep_limit": args.timestep_limit,
+            "person_amount": args.person_amount,
+            "dispersion_inc": args.dispersion_inc,
+            "drone_amount": args.drone_amount,
+            "drone_speed": args.drone_speed,
+            "detection_probability": args.detection_probability
+        }
+    elif args.env_type == "dsse_search":
+        env_config = {
             "grid_size": args.grid_size,
             "timestep_limit": args.timestep_limit,
             "person_amount": args.person_amount,
@@ -19,7 +29,13 @@ def apply_environment_config(config: PPOConfig, args: EnvSpecificArgs, env_name:
             "drone_amount": args.drone_amount,
             "drone_speed": args.drone_speed,
             "detection_probability": args.detection_probability,
-        },
+        }
+    else:
+        raise ValueError(f"Unknown environment type: {args.env_type}")
+
+    config = config.environment(
+        env_name,
+        env_config=env_config,
         clip_rewards=args.clip_rewards,
     )
 

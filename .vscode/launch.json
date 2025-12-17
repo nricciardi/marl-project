@@ -32,9 +32,16 @@
             "program": "${workspaceFolder}/src/dsse_search/eval.py",
             "console": "integratedTerminal",
             "args": [
-                "--checkpoint-path", "${workspaceFolder}/checkpoints/dsse_search/PPO_2025-12-15_14-40-40/PPO_dsse_search_a59ea_00000_0_clip_param=0.3000,entropy_coeff=0.0100,gamma=0.9950,lambda=0.9500,lr=0.0001,minibatch_size=5000,num__2025-12-15_14-40-40/checkpoint_000019",
+                "--checkpoint-path", "${workspaceFolder}/checkpoints/dsse_search_drone_3_person_1_grid_40/PPO_2025-12-16_07-21-42/PPO_dsse_search_7d33a_00000_0_clip_param=0.3000,entropy_coeff=0.0100,gamma=0.9950,lambda=0.9500,lr=0.0001,minibatch_size=3072,num__2025-12-16_07-21-42/checkpoint_000108",
                 "--n-episodes", "5",
-                "--sleep-time", "1"
+                "--sleep-time", "1",
+                "--grid-size", "40",
+                "--timestep-limit", "100",
+                "--person-amount", "1",
+                "--dispersion-inc", "0.1",
+                "--drone-amount", "2",
+                "--drone-speed", "10",
+                "--detection-probability", "0.9"
             ],
             "env": {
                 "PYTHONPATH": "${workspaceFolder}/src:${PYTHONPATH}"

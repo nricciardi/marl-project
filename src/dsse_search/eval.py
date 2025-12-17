@@ -27,6 +27,13 @@ if __name__ == "__main__":
 
     env = environment_creator(
         render_mode="human",
+        grid_size=args.grid_size,
+        timestep_limit=args.timestep_limit,
+        person_amount=args.person_amount,
+        dispersion_inc=args.dispersion_inc,
+        drone_amount=args.drone_amount,
+        drone_speed=args.drone_speed,
+        detection_probability=args.detection_probability,
     )
 
     results = simulate(

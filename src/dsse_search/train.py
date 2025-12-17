@@ -9,7 +9,7 @@ from argparse_dataclass import ArgumentParser
 from ray.rllib.algorithms.algorithm import Algorithm
 
 from dsse_search.cli import TrainingArgs
-from dsse_search.environment import environment_creator
+from dsse_search.environment import standard_environment_creator, random_person_and_drone_initial_position_environment_creator
 from dsse_search.ppo import get_train_ppo_config
 
 
@@ -27,8 +27,15 @@ if __name__ == "__main__":
     ray.init()
 
     logging.info("Registering environment...")
-    env_name = "dsse_search"
-    register_env(env_name, lambda config: environment_creator(**config))
+
+    env_name = args.env_type
+    if args.env_type == "random_person_and_drone_initial_position":
+        register_env(env_name, lambda config: random_person_and_drone_initial_position_environment_creator(**config))
+
+    elif args.env_type == "dsse_search":
+        register_env(env_name, lambda config: standard_environment_creator(**config))
+    else:
+        raise ValueError(f"Unknown environment type: {args.env_type}")
     
 
     if args.from_checkpoint:
