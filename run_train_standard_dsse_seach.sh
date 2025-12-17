@@ -18,11 +18,11 @@ export PYTHONPATH=./src:$PYTHONPATH
 
 checkpoint_dir=$1
 
-python3 -O ./src/dsse_search/train.py \
+python3 -O ./src/dsse_search/standard/train.py \
     --seed 42 \
     --mode shared \
     --checkpoint-dir $checkpoint_dir \
-    --iters 2000 \
+    --iters 200 \
     --save-interval 10 \
     --env-runners 6 \
     --num-envs-per-env-runner 10 \
@@ -47,9 +47,11 @@ python3 -O ./src/dsse_search/train.py \
     --drone-coordinates-mlp-dropout 0.0 \
     --fusion-mlp-hiddens 128 64 \
     --fusion-mlp-dropout 0.0 \
-    --grid-size 30 \
+    --grid-size 40 \
     --timestep-limit 100 \
     --person-amount 1 \
+    --person-initial-position 15 15 \
+    --person-speed 1.0 1.0 \
     --dispersion-inc 0.1 \
     --drone-amount 3 \
     --drone-speed 10 \

@@ -6,7 +6,7 @@ import supersuit as ss
 from DSSE import DroneSwarmSearch
 
 
-def standard_environment_creator(grid_size: int, timestep_limit: int, person_amount: int, drone_amount: int,
+def environment_creator(grid_size: int, timestep_limit: int, person_amount: int, drone_amount: int,
                         drone_speed: int, detection_probability: float, person_speed: Tuple[float, float], 
                         person_initial_position: Tuple[int, int], dispersion_inc: float, render_mode: str = "ansi") -> ParallelPettingZooEnv:
 

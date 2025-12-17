@@ -41,7 +41,8 @@
                 "--dispersion-inc", "0.1",
                 "--drone-amount", "2",
                 "--drone-speed", "10",
-                "--detection-probability", "0.9"
+                "--detection-probability", "0.9",
+                "--env-type", "random_person_and_drone_initial_position"
             ],
             "env": {
                 "PYTHONPATH": "${workspaceFolder}/src:${PYTHONPATH}"

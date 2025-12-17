@@ -4,34 +4,21 @@ from ray.rllib.core.rl_module.multi_rl_module import MultiRLModuleSpec
 from ray.rllib.core.rl_module.rl_module import RLModuleSpec
 
 from common.ppo import initialize_base_evaluation_ppo_from_args, initialize_base_training_ppo_from_args
-from dsse_search.cli import EnvSpecificArgs, EvalArgs, TrainingArgs
-from dsse_search.module.cnn_mlp_fusion_module import DsseSearchCnnMlpFusionRLModule
+from dsse_search.standard.cli import EnvSpecificArgs, EvalArgs, TrainingArgs
+from dsse_search.standard.module.cnn_mlp_fusion_module import DsseSearchCnnMlpFusionRLModule
 
 
 def apply_environment_config(config: PPOConfig, args: EnvSpecificArgs, env_name: str) -> PPOConfig:
 
-    if args.env_type == "random_person_and_drone_initial_position":        
-        env_config = {
-            "grid_size": args.grid_size,
-            "timestep_limit": args.timestep_limit,
-            "person_amount": args.person_amount,
-            "dispersion_inc": args.dispersion_inc,
-            "drone_amount": args.drone_amount,
-            "drone_speed": args.drone_speed,
-            "detection_probability": args.detection_probability
-        }
-    elif args.env_type == "dsse_search":
-        env_config = {
-            "grid_size": args.grid_size,
-            "timestep_limit": args.timestep_limit,
-            "person_amount": args.person_amount,
-            "dispersion_inc": args.dispersion_inc,
-            "drone_amount": args.drone_amount,
-            "drone_speed": args.drone_speed,
-            "detection_probability": args.detection_probability,
-        }
-    else:
-        raise ValueError(f"Unknown environment type: {args.env_type}")
+    env_config = {
+        "grid_size": args.grid_size,
+        "timestep_limit": args.timestep_limit,
+        "person_amount": args.person_amount,
+        "dispersion_inc": args.dispersion_inc,
+        "drone_amount": args.drone_amount,
+        "drone_speed": args.drone_speed,
+        "detection_probability": args.detection_probability,
+    }
 
     config = config.environment(
         env_name,
