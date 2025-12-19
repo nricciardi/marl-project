@@ -1,5 +1,8 @@
 {
     "configurations": [
+
+
+        
         {
             "name": "Python Debugger: Current File",
             "type": "debugpy",
@@ -26,23 +29,49 @@
             }
         },
         {
-            "name": "Python Debugger: DSSE Search Eval",
+            "name": "Python Debugger: DSSE Search Random Eval",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/src/dsse_search/eval.py",
+            "program": "${workspaceFolder}/src/dsse_search/random/eval.py",
             "console": "integratedTerminal",
             "args": [
-                "--checkpoint-path", "${workspaceFolder}/checkpoints/dsse_search_drone_3_person_1_grid_40/PPO_2025-12-16_07-21-42/PPO_dsse_search_7d33a_00000_0_clip_param=0.3000,entropy_coeff=0.0100,gamma=0.9950,lambda=0.9500,lr=0.0001,minibatch_size=3072,num__2025-12-16_07-21-42/checkpoint_000108",
-                "--n-episodes", "5",
-                "--sleep-time", "1",
+                "--checkpoint-path", "${workspaceFolder}/checkpoints/dsse_search/random_person_and_drone_initial_position/d3_p1_g40/PPO_2025-12-19_18-34-47/PPO_random_person_and_drone_initial_position_environment_creator_v2_0397b_00000_0_clip_param=0.3000,entropy_coeff=0.0100,gamma=0.9_2025-12-19_18-34-47/checkpoint_000029",
+                "--n-episodes", "10",
+                "--sleep-time", "0",
                 "--grid-size", "40",
                 "--timestep-limit", "100",
                 "--person-amount", "1",
                 "--dispersion-inc", "0.1",
-                "--drone-amount", "2",
+                "--drone-amount", "3",
+                "--drone-speed", "10",
+                "--detection-probability", "1",
+            ],
+            "justMyCode": false,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src:${PYTHONPATH}"
+            }
+        },
+        {
+            "name": "Python Debugger: DSSE Search Eval",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/dsse_search/standard/eval.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--checkpoint-path", "${workspaceFolder}/checkpoints/dsse_search/standard/d3_p1_g40/PPO_2025-12-17_19-38-59/PPO_standard_dsse_search_a68ef_00000_0_clip_param=0.3000,entropy_coeff=0.0100,gamma=0.9950,lambda=0.9500,lr=0.0001,minibatch_size=_2025-12-17_19-38-59/checkpoint_000019",
+                "--n-episodes", "5",
+                "--sleep-time", "0",
+                "--grid-size", "40",
+                "--timestep-limit", "100",
+                "--person-amount", "1",
+                "--person-initial-position-x", "5",
+                "--person-initial-position-y", "5",
+                "--person-speed-x", "1.0",
+                "--person-speed-y", "1.0",
+                "--dispersion-inc", "0.1",
+                "--drone-amount", "3",
                 "--drone-speed", "10",
                 "--detection-probability", "0.9",
-                "--env-type", "random_person_and_drone_initial_position"
             ],
             "env": {
                 "PYTHONPATH": "${workspaceFolder}/src:${PYTHONPATH}"
@@ -177,7 +206,7 @@
             }
         },
         {
-            "name": "Python Debugger: DSSE Search Training",
+            "name": "Python Debugger: DSSE Search Standard Training",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/src/dsse_search/train.py",
@@ -220,6 +249,70 @@
                 "--lambda", "0.95",
                 "--clip-param", "0.2",
             ],
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/src"
+            }
+        },
+        {
+            "name": "Python Debugger: DSSE Search Random Initial Position Training",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/dsse_search/random/train.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--mode",
+                "shared",
+                "--checkpoint-dir",
+                "${workspaceFolder}/checkpoints/dsse_search",
+                "--iters",
+                "10",
+                "--save-interval",
+                "2",
+                "--env-runners",
+                "0",
+                "--num-envs-per-env-runner",
+                "1",
+                "--num-cpus-per-env-runner",
+                "1",
+                "--num-gpus-per-env-runner",
+                "0",
+                "--lr",
+                "0.0001",
+                "--gamma",
+                "0.99",
+                "--training-batch-size",
+                "6000",
+                "--epochs",
+                "5",
+                "--num-learners",
+                "1",
+                "--num-gpus-per-learner",
+                "0.5",
+                "--num-cpus-per-learner",
+                "1",
+                "--entropy-coeff",
+                "0.01",
+                "--minibatch-size",
+                "512",
+                "--lambda", "0.95",
+                "--clip-param", "0.2",
+                "--grid-size", "40",
+                "--timestep-limit", "100",
+                "--person-amount", "1",
+                "--dispersion-inc", "0.1",
+                "--drone-amount", "3",
+                "--drone-speed", "10",
+                "--detection-probability", "0.9",
+                "--probability-matrix-cnn-conv2d", "1", "2",
+                "--probability-matrix-cnn-kernel-sizes", "3", "3",
+                "--probability-matrix-cnn-strides", "1", "1",
+                "--probability-matrix-cnn-paddings", "1", "1",
+                "--drone-coordinates-mlp-hiddens", "4", "4",
+                "--drone-coordinates-mlp-dropout", "0",
+                "--fusion-mlp-hiddens", "8", "8",
+                "--fusion-mlp-dropout", "0",
+            ],
+            "justMyCode": false,
             "env": {
                 "PYTHONPATH": "${workspaceFolder}/src"
             }

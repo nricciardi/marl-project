@@ -8,9 +8,9 @@ from common.tuner import initialize_base_tuner
 from argparse_dataclass import ArgumentParser
 from ray.rllib.algorithms.algorithm import Algorithm
 
-from dsse_search.cli import TrainingArgs
-from dsse_search.environment import build_env_name, standard_environment_creator, random_person_and_drone_initial_position_environment_creator
-from dsse_search.ppo import get_train_ppo_config
+from dsse_search.random.cli import TrainingArgs
+from dsse_search.random.environment_ import random_person_and_drone_initial_position_environment_creator
+from dsse_search.random.ppo import get_train_ppo_config
 
 
 logging.basicConfig(level=logging.INFO)
@@ -28,14 +28,8 @@ if __name__ == "__main__":
 
     logging.info("Registering environment...")
 
-    env_name = build_env_name(args.env_type)
-    if args.env_type == "random_person_and_drone_initial_position":
-        register_env(env_name, lambda config: random_person_and_drone_initial_position_environment_creator(**config))
-
-    elif args.env_type == "standard":
-        register_env(env_name, lambda config: standard_environment_creator(**config))
-    else:
-        raise ValueError(f"Unknown environment type: {args.env_type}")
+    env_name = "random_person_and_drone_initial_position_environment_creator_v2"
+    register_env(env_name, lambda config: random_person_and_drone_initial_position_environment_creator(**config))
     
 
     if args.from_checkpoint:

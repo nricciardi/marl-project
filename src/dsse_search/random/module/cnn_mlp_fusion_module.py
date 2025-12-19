@@ -24,10 +24,10 @@ class DsseSearchCnnMlpFusionRLModule(TorchRLModule, ValueFunctionAPI):
         
         n_actions = self.action_space.n
 
-        drone_coordinates, probability_matrix = self.observation_space
+        probability_matrix = self.observation_space[1]
+        drone_coordinates = self.observation_space[0]
 
         rows, cols = probability_matrix.shape
-        n_coordinates = drone_coordinates.shape[0]
 
         probability_matrix_cnn_conv2d = self.model_config.get("probability_matrix_cnn_conv2d")
         probability_matrix_cnn_strides = self.model_config.get("probability_matrix_cnn_strides")
@@ -52,10 +52,12 @@ class DsseSearchCnnMlpFusionRLModule(TorchRLModule, ValueFunctionAPI):
         drone_coordinates_mlp_hiddens = self.model_config.get("drone_coordinates_mlp_hiddens")
         drone_coordinates_mlp_dropout = self.model_config.get("drone_coordinates_mlp_dropout", 0.0)
 
+        print("Drone Coordinates MLP Input Dim:", len(drone_coordinates))
+
         self.coordinates_mlp = nn.Sequential(
             *build_mlp(
                 mlp_hiddens=drone_coordinates_mlp_hiddens,
-                input_dim=n_coordinates,
+                input_dim=len(drone_coordinates),   # (batch, n_coordinates)
                 dropout=drone_coordinates_mlp_dropout
             )
         )
@@ -95,35 +97,17 @@ class DsseSearchCnnMlpFusionRLModule(TorchRLModule, ValueFunctionAPI):
         # # Debugging prints
         # print("Drone Coordinates:")
         # print(drone_coordinates)
+        # print(drone_coordinates.shape)
+        # print(len(drone_coordinates))
         # for coord in drone_coordinates:
-        #     print(coord)
+        #     print(type(coord))
         #     print(coord.shape)
+            # print(coord)
         # print("---")
         # print("Probability Matrix:")
         # print(probability_matrix)
         # print(probability_matrix.shape)
         # print("---")
-
-        x_coordinates, y_coordinates = drone_coordinates
-
-        if not torch.is_tensor(x_coordinates):
-            x_coordinates = torch.tensor(x_coordinates)
-
-        if x_coordinates.dim() == 0:
-            x_coordinates = x_coordinates.unsqueeze(0)  # (1,)
-
-        if not torch.is_tensor(y_coordinates):
-            y_coordinates = torch.tensor(y_coordinates)
-
-        if y_coordinates.dim() == 0:
-            y_coordinates = y_coordinates.unsqueeze(0)  # (1,)
-
-        if x_coordinates.dim() == 1:  # (Batch,)
-            x_coordinates = x_coordinates.unsqueeze(-1)  # (Batch, 1)
-        if y_coordinates.dim() == 1:  # (Batch,)
-            y_coordinates = y_coordinates.unsqueeze(-1)  # (Batch, 1)
-
-        drone_coordinates = torch.cat([x_coordinates, y_coordinates], dim=-1).float()   # (Batch, n_coordinates), i.e. (Batch, 2)
 
         if not torch.is_tensor(probability_matrix):
             probability_matrix = torch.from_numpy(probability_matrix)
@@ -134,6 +118,19 @@ class DsseSearchCnnMlpFusionRLModule(TorchRLModule, ValueFunctionAPI):
             probability_matrix = probability_matrix.unsqueeze(0).unsqueeze(0)  # Add batch and channel dimensions
 
         probability_matrix = probability_matrix.float()     # (Batch, 1, Rows, Cols)
+
+
+        if not torch.is_tensor(drone_coordinates):
+            drone_coordinates = torch.from_numpy(drone_coordinates)
+        
+        if drone_coordinates.dim() == 1:  # (n_coordinates,)
+            drone_coordinates = drone_coordinates.unsqueeze(0)  # (1, n_coordinates)
+
+        drone_coordinates = drone_coordinates.float()  # (Batch, n_coordinates)
+
+        # drone_coordinates = drone_coordinates / probability_matrix.shape[-1]  # Normalize coordinates to [0, 1]
+
+        assert drone_coordinates.dim() == 2, "Drone coordinates tensor must be of shape (Batch, n_coordinates)."
 
         cnn_output = self.probability_matrix_cnn(probability_matrix)
         coordinates_output = self.coordinates_mlp(drone_coordinates)

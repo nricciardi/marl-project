@@ -4,34 +4,22 @@ from ray.rllib.core.rl_module.multi_rl_module import MultiRLModuleSpec
 from ray.rllib.core.rl_module.rl_module import RLModuleSpec
 
 from common.ppo import initialize_base_evaluation_ppo_from_args, initialize_base_training_ppo_from_args
-from dsse_search.cli import EnvSpecificArgs, EvalArgs, TrainingArgs
-from dsse_search.module.cnn_mlp_fusion_module import DsseSearchCnnMlpFusionRLModule
+from dsse_search.random.cli import EnvSpecificArgs, EvalArgs, TrainingArgs
+from dsse_search.random.module.cnn_mlp_fusion_module import DsseSearchCnnMlpFusionRLModule
+from dsse_search.random.module.mlp_module import DsseSearchMlpRLModule
 
 
 def apply_environment_config(config: PPOConfig, args: EnvSpecificArgs, env_name: str) -> PPOConfig:
 
-    if args.env_type == "random_person_and_drone_initial_position":        
-        env_config = {
-            "grid_size": args.grid_size,
-            "timestep_limit": args.timestep_limit,
-            "person_amount": args.person_amount,
-            "dispersion_inc": args.dispersion_inc,
-            "drone_amount": args.drone_amount,
-            "drone_speed": args.drone_speed,
-            "detection_probability": args.detection_probability
-        }
-    elif args.env_type == "standard":
-        env_config = {
-            "grid_size": args.grid_size,
-            "timestep_limit": args.timestep_limit,
-            "person_amount": args.person_amount,
-            "dispersion_inc": args.dispersion_inc,
-            "drone_amount": args.drone_amount,
-            "drone_speed": args.drone_speed,
-            "detection_probability": args.detection_probability,
-        }
-    else:
-        raise ValueError(f"Unknown environment type: {args.env_type}")
+    env_config = {
+        "grid_size": args.grid_size,
+        "timestep_limit": args.timestep_limit,
+        "person_amount": args.person_amount,
+        "dispersion_inc": args.dispersion_inc,
+        "drone_amount": args.drone_amount,
+        "drone_speed": args.drone_speed,
+        "detection_probability": args.detection_probability
+    }
 
     config = config.environment(
         env_name,
@@ -42,24 +30,22 @@ def apply_environment_config(config: PPOConfig, args: EnvSpecificArgs, env_name:
     return config
 
 
-def apply_policy_config(config: PPOConfig, mode: str, probability_matrix_cnn_conv2d: List[int], probability_matrix_cnn_kernel_sizes: List[int],
-                        probability_matrix_cnn_strides: List[int], probability_matrix_cnn_paddings: List[int],
-                        drone_coordinates_mlp_hiddens: List[int], drone_coordinates_mlp_dropout: float, fusion_mlp_hiddens: List[int],
-                        fusion_mlp_dropout: float) -> PPOConfig:
-    if mode == "shared":
+def apply_policy_config(config: PPOConfig, mode: str) -> PPOConfig:
+    
+    if mode == "shared_cnn_mlp_fusion":
         return (config
                     .rl_module(
                         rl_module_spec=RLModuleSpec(
                             module_class=DsseSearchCnnMlpFusionRLModule,
                             model_config={
-                                "probability_matrix_cnn_conv2d": probability_matrix_cnn_conv2d,
-                                "probability_matrix_cnn_kernel_sizes": probability_matrix_cnn_kernel_sizes,
-                                "probability_matrix_cnn_strides": probability_matrix_cnn_strides,
-                                "probability_matrix_cnn_paddings": probability_matrix_cnn_paddings,
-                                "drone_coordinates_mlp_hiddens": drone_coordinates_mlp_hiddens,
-                                "drone_coordinates_mlp_dropout": drone_coordinates_mlp_dropout,
-                                "fusion_mlp_hiddens": fusion_mlp_hiddens,
-                                "fusion_mlp_dropout": fusion_mlp_dropout,
+                                "probability_matrix_cnn_conv2d": [1, 16, 32],
+                                "probability_matrix_cnn_kernel_sizes": [3, 3, 3],
+                                "probability_matrix_cnn_strides": [2, 2, 2],
+                                "probability_matrix_cnn_paddings": [1, 1, 1],
+                                "drone_coordinates_mlp_hiddens": [4, 4],
+                                "drone_coordinates_mlp_dropout": 0,
+                                "fusion_mlp_hiddens": [128, 64],
+                                "fusion_mlp_dropout": 0,
                             }
                         )   
                     )
@@ -70,8 +56,26 @@ def apply_policy_config(config: PPOConfig, mode: str, probability_matrix_cnn_con
                         policy_mapping_fn=lambda agent_id, *args, **kwargs: "shared_cnn"
                     )
                 )
-    
-    raise ValueError(f"Unknown mode: {mode}")
+    elif mode == "shared_mlp":
+        return (config
+                    .rl_module(
+                        rl_module_spec=RLModuleSpec(
+                            module_class=DsseSearchMlpRLModule,
+                            model_config={
+                                "mlp_hiddens": [256, 128],
+                                "mlp_dropout": 0,
+                            }
+                        )   
+                    )
+                    .multi_agent(
+                        policies={
+                            "shared_mlp",
+                        },
+                        policy_mapping_fn=lambda agent_id, *args, **kwargs: "shared_mlp"
+                    )
+                )
+    else:
+        raise ValueError(f"Unknown mode: {mode}")
 
 
 def get_train_ppo_config(args: TrainingArgs, env_name: str) -> PPOConfig:
@@ -80,14 +84,10 @@ def get_train_ppo_config(args: TrainingArgs, env_name: str) -> PPOConfig:
     config = apply_policy_config(
         config,
         mode=args.mode,
-        probability_matrix_cnn_conv2d=args.probability_matrix_cnn_conv2d,
-        probability_matrix_cnn_kernel_sizes=args.probability_matrix_cnn_kernel_sizes,
-        probability_matrix_cnn_strides=args.probability_matrix_cnn_strides,
-        probability_matrix_cnn_paddings=args.probability_matrix_cnn_paddings,
-        drone_coordinates_mlp_hiddens=args.drone_coordinates_mlp_hiddens,
-        drone_coordinates_mlp_dropout=args.drone_coordinates_mlp_dropout,
-        fusion_mlp_hiddens=args.fusion_mlp_hiddens,
-        fusion_mlp_dropout=args.fusion_mlp_dropout
+    )
+
+    config = config.experimental(
+        _disable_preprocessor_api=True
     )
 
     return config

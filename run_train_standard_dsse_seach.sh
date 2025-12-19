@@ -24,37 +24,37 @@ python3 -O ./src/dsse_search/standard/train.py \
     --checkpoint-dir $checkpoint_dir \
     --iters 200 \
     --save-interval 10 \
-    --env-runners 1 \
-    --num-envs-per-env-runner 1 \
+    --env-runners 6 \
+    --num-envs-per-env-runner 10 \
     --num-cpus-per-env-runner 1 \
     --num-gpus-per-env-runner 0 \
     --lr 1e-4 \
     --gamma 0.995 \
     --clip-param 0.3 \
     --lambda 0.95 \
-    --training-batch-size 30720 \
-    --minibatch-size 3072 \
+    --training-batch-size 8192 \
+    --minibatch-size 1024 \
     --epochs 10 \
     --num-learners 1 \
     --num-gpus-per-learner 0.5 \
     --num-cpus-per-learner 1 \
     --entropy-coeff 0.01 \
-    --probability-matrix-cnn-conv2d 1 16 32 64 \
+    --probability-matrix-cnn-conv2d 1 4 8 16 \
     --probability-matrix-cnn-kernel-sizes 3 3 3 3 \
     --probability-matrix-cnn-strides 2 2 2 2 \
     --probability-matrix-cnn-paddings 1 1 1 1 \
-    --drone-coordinates-mlp-hiddens 16 32 \
+    --drone-coordinates-mlp-hiddens 4 4 \
     --drone-coordinates-mlp-dropout 0.0 \
-    --fusion-mlp-hiddens 128 64 \
+    --fusion-mlp-hiddens 64 32 \
     --fusion-mlp-dropout 0.0 \
     --grid-size 40 \
     --timestep-limit 100 \
     --person-amount 1 \
-    --person-initial-position-x 15 \
-    --person-initial-position-y 15 \
+    --person-initial-position-x 5 \
+    --person-initial-position-y 5 \
     --person-speed-x 1.0 \
     --person-speed-y 1.0 \
     --dispersion-inc 0.1 \
     --drone-amount 3 \
     --drone-speed 10 \
-    --detection-probability 0.9
+    --detection-probability 1

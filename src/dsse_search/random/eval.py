@@ -3,8 +3,8 @@ import logging
 from evaluate.visualize import visualize
 from evaluate.simulate import simulate, plot_simulation_results
 from ray.tune.registry import register_env
-from dsse_search.environment import environment_creator
-from dsse_search.cli import EvalArgs
+from dsse_search.random.environment_ import random_person_and_drone_initial_position_environment_creator
+from dsse_search.random.cli import EvalArgs
 from argparse_dataclass import ArgumentParser
 from ray.rllib.algorithms.algorithm import Algorithm
 
@@ -19,13 +19,13 @@ if __name__ == "__main__":
     logging.info("Initializing Ray...")
     ray.init()
 
-    env_name = "dsse_search"
-    register_env(env_name, lambda config: environment_creator(**config))
+    env_name = "random_person_and_drone_initial_position_environment_creator_v2"
+    register_env(env_name, lambda config: random_person_and_drone_initial_position_environment_creator(**config))
     
     logging.info(f"Restoring checkpoint from {args.checkpoint_path}...")
     algo = Algorithm.from_checkpoint(args.checkpoint_path)
 
-    env = environment_creator(
+    env = random_person_and_drone_initial_position_environment_creator(
         render_mode="human",
         grid_size=args.grid_size,
         timestep_limit=args.timestep_limit,
@@ -41,6 +41,7 @@ if __name__ == "__main__":
         env,
         n_episodes=args.n_episodes,
         explore=args.explore,
+        sleep_time=args.sleep_time,
     )
 
     plot_simulation_results(results)

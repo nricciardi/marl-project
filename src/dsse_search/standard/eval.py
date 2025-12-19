@@ -19,7 +19,7 @@ if __name__ == "__main__":
     logging.info("Initializing Ray...")
     ray.init()
 
-    env_name = "dsse_search"
+    env_name = "standard_dsse_search"
     register_env(env_name, lambda config: environment_creator(**config))
     
     logging.info(f"Restoring checkpoint from {args.checkpoint_path}...")
@@ -34,6 +34,8 @@ if __name__ == "__main__":
         drone_amount=args.drone_amount,
         drone_speed=args.drone_speed,
         detection_probability=args.detection_probability,
+        person_speed=(args.person_speed_x, args.person_speed_y),
+        person_initial_position=(args.person_initial_position_x, args.person_initial_position_y)
     )
 
     results = simulate(
@@ -41,6 +43,7 @@ if __name__ == "__main__":
         env,
         n_episodes=args.n_episodes,
         explore=args.explore,
+        sleep_time=args.sleep_time,
     )
 
     plot_simulation_results(results)
