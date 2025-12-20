@@ -62,7 +62,7 @@ def apply_policy_config(config: PPOConfig, mode: str) -> PPOConfig:
                         rl_module_spec=RLModuleSpec(
                             module_class=DsseSearchMlpRLModule,
                             model_config={
-                                "mlp_hiddens": [256, 128],
+                                "mlp_hiddens": [32, 64, 64, 64, 32],
                                 "mlp_dropout": 0,
                             }
                         )   

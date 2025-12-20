@@ -132,8 +132,6 @@ class DsseSearchMlpRLModule(TorchRLModule, ValueFunctionAPI):
         assert drone_coordinates.dim() == 2, "Drone coordinates tensor must be of shape (Batch, n_coordinates)."
 
 
-
-
         fusion_input = torch.cat([
             drone_coordinates,  # (Batch, n_coordinates)
             com_x.unsqueeze(1),

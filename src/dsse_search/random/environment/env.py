@@ -20,8 +20,8 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
         exceed_timestep=0,
         drones_collision=0,
         search_cell=0,
-        search_and_find=40,
-        proximity_threshold=0,
+        search_and_find=10,
+        proximity_threshold=1,
     )
 
     def __init__(

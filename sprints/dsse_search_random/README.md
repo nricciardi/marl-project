@@ -434,6 +434,106 @@ python3 -O ./src/dsse_search/random/train.py \
     --detection-probability 1
 ```
 
+![](mlp_5.png)
+
+### 6
+
+```
+python3 -O ./src/dsse_search/random/train.py \
+    --seed 42 \
+    --mode shared_mlp \
+    --checkpoint-dir $checkpoint_dir \
+    --iters 1000 \
+    --save-interval 10 \
+    --env-runners 6 \
+    --num-envs-per-env-runner 10 \
+    --num-cpus-per-env-runner 1 \
+    --num-gpus-per-env-runner 0 \
+    --lr 1e-4 \
+    --gamma 0.95 \
+    --clip-param 0.3 \
+    --lambda 0.95 \
+    --training-batch-size 8192 \
+    --minibatch-size 1024 \
+    --epochs 10 \
+    --num-learners 1 \
+    --num-gpus-per-learner 0.5 \
+    --num-cpus-per-learner 1 \
+    --entropy-coeff 0.01 \
+    --grid-size 40 \
+    --timestep-limit 100 \
+    --person-amount 1 \
+    --dispersion-inc 0.1 \
+    --drone-amount 3 \
+    --drone-speed 10 \
+    --detection-probability 1
+```
+
+![](mlp_6.png)
+
+
+
+### 7
+
+```
+reward_scheme = Reward(
+        default=-0.15,
+        leave_grid=-0.5,
+        exceed_timestep=0,
+        drones_collision=0,
+        search_cell=0,
+        search_and_find=10,
+        proximity_threshold=1,
+    )
+```
+
+```
+python3 -O ./src/dsse_search/random/train.py \
+    --seed 42 \
+    --mode shared_mlp \
+    --checkpoint-dir $checkpoint_dir \
+    --iters 1000 \
+    --save-interval 10 \
+    --env-runners 6 \
+    --num-envs-per-env-runner 10 \
+    --num-cpus-per-env-runner 1 \
+    --num-gpus-per-env-runner 0 \
+    --lr 1e-4 \
+    --gamma 0.95 \
+    --clip-param 0.3 \
+    --lambda 0.95 \
+    --training-batch-size 8192 \
+    --minibatch-size 1024 \
+    --epochs 10 \
+    --num-learners 1 \
+    --num-gpus-per-learner 0.5 \
+    --num-cpus-per-learner 1 \
+    --entropy-coeff 0.01 \
+    --grid-size 40 \
+    --timestep-limit 100 \
+    --person-amount 1 \
+    --dispersion-inc 0.1 \
+    --drone-amount 3 \
+    --drone-speed 10 \
+    --detection-probability 1
+```
+
+![](mlp_7.png)
+
+### 8
+
+```
+model_config={
+    "mlp_hiddens": [32, 64, 64, 64, 32],
+    "mlp_dropout": 0,
+}
+```
+
+![](mlp_8.png)
+
+
+
+
 
 
 

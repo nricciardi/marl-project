@@ -29,7 +29,7 @@ python3 -O ./src/dsse_search/random/train.py \
     --num-cpus-per-env-runner 1 \
     --num-gpus-per-env-runner 0 \
     --lr 1e-4 \
-    --gamma 0.995 \
+    --gamma 0.95 \
     --clip-param 0.3 \
     --lambda 0.95 \
     --training-batch-size 8192 \
