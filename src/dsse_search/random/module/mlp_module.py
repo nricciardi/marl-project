@@ -37,7 +37,7 @@ class DsseSearchMlpRLModule(TorchRLModule, ValueFunctionAPI):
         self.mlp = nn.Sequential(
             *build_mlp(
                 mlp_hiddens=mlp_hiddens,
-                input_dim=len(drone_coordinates) + rows * cols + 2,   # (batch, n_coordinates + rows*cols + mass center)
+                input_dim=len(drone_coordinates) + 2 + 2,
                 dropout=mlp_dropout
             )
         )
@@ -85,17 +85,38 @@ class DsseSearchMlpRLModule(TorchRLModule, ValueFunctionAPI):
 
         probability_matrix = probability_matrix.float()     # (Batch, Rows, Cols)
 
-        x_center_of_mass = torch.sum(
-            probability_matrix * torch.arange(probability_matrix.shape[2], dtype=probability_matrix.dtype, device=probability_matrix.device).unsqueeze(0).unsqueeze(0),
-            dim=(1,2)
-        ) / (torch.sum(probability_matrix, dim=(1,2)) + 1e-8)  # (Batch,)
+        pdf = probability_matrix
 
-        y_center_of_mass = torch.sum(
-            probability_matrix * torch.arange(probability_matrix.shape[1], dtype=probability_matrix.dtype, device=probability_matrix.device).unsqueeze(0).unsqueeze(2),
-            dim=(1,2)
-        ) / (torch.sum(probability_matrix, dim=(1,2)) + 1e-8)  # (Batch,)
+        batch_size, height, width = probability_matrix.shape
+        device = probability_matrix.device
 
-        probability_matrix_flat = probability_matrix.view(probability_matrix.size(0), -1)  # (Batch, Rows*Cols)
+        y_coords = torch.arange(height, device=device).float()
+        x_coords = torch.arange(width, device=device).float()
+        
+        # indexing='ij' ensures grid_y varies along rows, grid_x along cols
+        grid_y, grid_x = torch.meshgrid(y_coords, x_coords, indexing='ij')
+        
+        # Expand to batch
+        grid_y = grid_y.expand(batch_size, -1, -1)
+        grid_x = grid_x.expand(batch_size, -1, -1)
+
+        # E[x] = sum(x * p)
+        com_y_float = (grid_y * pdf).sum(dim=(1, 2))
+        com_x_float = (grid_x * pdf).sum(dim=(1, 2))
+
+        # We round to the nearest pixel and convert to long (int64)
+        com_y = torch.round(com_y_float).long().float()
+        com_x = torch.round(com_x_float).long().float()
+
+        # Note: Variance is calculated relative to the precise float center 
+        # to minimize error, even if we return integer coordinates.
+        # Reshape CoM for broadcasting: (Batch, 1, 1)
+        com_y_expanded = com_y_float.view(batch_size, 1, 1)
+        com_x_expanded = com_x_float.view(batch_size, 1, 1)
+
+        var_y = (pdf * (grid_y - com_y_expanded) ** 2).sum(dim=(1, 2))
+        var_x = (pdf * (grid_x - com_x_expanded) ** 2).sum(dim=(1, 2))
+
 
 
         if not torch.is_tensor(drone_coordinates):
@@ -110,7 +131,16 @@ class DsseSearchMlpRLModule(TorchRLModule, ValueFunctionAPI):
 
         assert drone_coordinates.dim() == 2, "Drone coordinates tensor must be of shape (Batch, n_coordinates)."
 
-        fusion_input = torch.cat([drone_coordinates, probability_matrix_flat, x_center_of_mass.unsqueeze(-1), y_center_of_mass.unsqueeze(-1)], dim=-1)
+
+
+
+        fusion_input = torch.cat([
+            drone_coordinates,  # (Batch, n_coordinates)
+            com_x.unsqueeze(1),
+            com_y.unsqueeze(1),
+            var_x.unsqueeze(1),
+            var_y.unsqueeze(1),
+        ], dim=-1)
 
         embeddings = self.mlp(fusion_input)
 

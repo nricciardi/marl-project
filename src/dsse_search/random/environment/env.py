@@ -15,12 +15,12 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
     }
 
     reward_scheme = Reward(
-        default=-0.1,
-        leave_grid=-0.2,
+        default=-0.15,
+        leave_grid=-0.5,
         exceed_timestep=0,
         drones_collision=0,
         search_cell=0,
-        search_and_find=20,
+        search_and_find=40,
         proximity_threshold=0,
     )
 

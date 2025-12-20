@@ -24,8 +24,12 @@ def simulate(
     env,
     n_episodes: int,
     explore: bool,
+    setup_sleep_time: float = 0.0,
     sleep_time: float = 0.0
 ) -> List[EpisodeStats]:
+    
+    if setup_sleep_time > 0:
+        time.sleep(setup_sleep_time)
     
     logging.info(f"Starting simulation for {n_episodes} episodes...")
 

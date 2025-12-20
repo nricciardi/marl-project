@@ -35,8 +35,8 @@
             "program": "${workspaceFolder}/src/dsse_search/random/eval.py",
             "console": "integratedTerminal",
             "args": [
-                "--checkpoint-path", "${workspaceFolder}/checkpoints/dsse_search/random_person_and_drone_initial_position/d3_p1_g40/PPO_2025-12-19_18-34-47/PPO_random_person_and_drone_initial_position_environment_creator_v2_0397b_00000_0_clip_param=0.3000,entropy_coeff=0.0100,gamma=0.9_2025-12-19_18-34-47/checkpoint_000029",
-                "--n-episodes", "10",
+                "--checkpoint-path", "${workspaceFolder}/checkpoints/dsse_search/random_person_and_drone_initial_position/d3_p1_g40/PPO_2025-12-20_10-14-17/PPO_random_person_and_drone_initial_position_environment_creator_v2_42f26_00000_0_clip_param=0.3000,entropy_coeff=0.0100,gamma=0.9_2025-12-20_10-14-17/checkpoint_000092",
+                "--n-episodes", "100",
                 "--sleep-time", "0",
                 "--grid-size", "40",
                 "--timestep-limit", "100",
@@ -45,6 +45,7 @@
                 "--drone-amount", "3",
                 "--drone-speed", "10",
                 "--detection-probability", "1",
+                "--setup-sleep-time", "5"
             ],
             "justMyCode": false,
             "env": {

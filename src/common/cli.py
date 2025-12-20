@@ -58,6 +58,7 @@ class CommonEvalArgs(CommonArgs):
     """
     Base arguments for evaluation.
     """
+    setup_sleep_time: float = field(default=0.0, metadata={"help": "Sleep time before starting evaluation (in seconds)"})
     checkpoint_path: str = field(metadata={"help": "Path to the checkpoint to evaluate"})
     n_episodes: int = field(default=10, metadata={"help": "Number of episodes to evaluate"})
     explore: bool = field(default=False, metadata={"help": "Explore during evaluation"})
