@@ -12,7 +12,7 @@ class EnvSpecificArgs(CommonEnvSpecificArgs):
 
 @dataclass
 class TrainingArgs(CommonTrainingArgs, EnvSpecificArgs):
-    mode: Literal["independent", "shared_mlp", "shared_cnn_mlp_fusion"]
+    mode: Literal["independent", "shared_mlp", "shared_cnn_mlp_fusion", "shared_attention", "shared_mlp_v2"]
 
 
 @dataclass

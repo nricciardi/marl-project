@@ -20,7 +20,7 @@ checkpoint_dir=$1
 
 python3 -O ./src/dsse_search/random/train.py \
     --seed 42 \
-    --mode shared_mlp \
+    --mode shared_mlp_v2 \
     --checkpoint-dir $checkpoint_dir \
     --iters 1000 \
     --save-interval 10 \

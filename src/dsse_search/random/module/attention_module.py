@@ -22,9 +22,8 @@ class DsseSearchAttentionRLModule(TorchRLModule, ValueFunctionAPI):
         n_actions = self.action_space.n
         
         # Hyperparameters (can be moved to model_config)
-        self.d_model = 64
-        self.n_heads = 4
-        self.grid_size = 40.0 # Used for normalization
+        self.d_model = 8
+        self.n_heads = 2
 
         # --- Embeddings ---
         # Projects (x, y) coordinates to d_model
@@ -59,15 +58,15 @@ class DsseSearchAttentionRLModule(TorchRLModule, ValueFunctionAPI):
         fusion_dim = self.d_model * 2 
         
         self.action_head = nn.Sequential(
-            nn.Linear(fusion_dim, 64),
+            nn.Linear(fusion_dim, 16),
             nn.ReLU(),
-            nn.Linear(64, n_actions)
+            nn.Linear(16, n_actions)
         )
         
         self.value_head = nn.Sequential(
-            nn.Linear(fusion_dim, 64),
+            nn.Linear(fusion_dim, 16),
             nn.ReLU(),
-            nn.Linear(64, 1)
+            nn.Linear(16, 1)
         )
         
         # Initialize weights for stability
@@ -90,6 +89,7 @@ class DsseSearchAttentionRLModule(TorchRLModule, ValueFunctionAPI):
         
         probability_matrix = probability_matrix.float() # (Batch, Rows, Cols)
         batch_size, rows, cols = probability_matrix.shape
+        grid_size = rows * cols
 
         # 2. Process Drone Coordinates
         if not torch.is_tensor(drone_coordinates_flat):
@@ -135,7 +135,7 @@ class DsseSearchAttentionRLModule(TorchRLModule, ValueFunctionAPI):
         grid_relative_coords = grid_abs_coords_flat - ego_drone_pos
 
         # Normalize relative coords (Crucial for learning stability)
-        grid_relative_coords = grid_relative_coords / self.grid_size
+        grid_relative_coords = grid_relative_coords / grid_size
 
         # Concat: [Probability, Rel_X, Rel_Y]
         spatial_input = torch.cat([probs_flat, grid_relative_coords], dim=-1) # (Batch, 1600, 3)

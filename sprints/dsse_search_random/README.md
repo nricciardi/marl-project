@@ -534,7 +534,103 @@ model_config={
 
 
 
+## Attention Module
 
+### 1
+
+```
+python3 -O ./src/dsse_search/random/train.py \
+    --seed 42 \
+    --mode shared_attention \
+    --checkpoint-dir $checkpoint_dir \
+    --iters 1000 \
+    --save-interval 10 \
+    --env-runners 6 \
+    --num-envs-per-env-runner 10 \
+    --num-cpus-per-env-runner 1 \
+    --num-gpus-per-env-runner 0 \
+    --lr 1e-4 \
+    --gamma 0.95 \
+    --clip-param 0.3 \
+    --lambda 0.95 \
+    --training-batch-size 1024 \
+    --minibatch-size 128 \
+    --epochs 10 \
+    --num-learners 1 \
+    --num-gpus-per-learner 0.5 \
+    --num-cpus-per-learner 1 \
+    --entropy-coeff 0.01 \
+    --grid-size 40 \
+    --timestep-limit 100 \
+    --person-amount 1 \
+    --dispersion-inc 0.1 \
+    --drone-amount 3 \
+    --drone-speed 10 \
+    --detection-probability 1
+```
+
+```
+self.d_model = 8
+        self.n_heads = 2
+
+        # --- Embeddings ---
+        # Projects (x, y) coordinates to d_model
+        self.drone_embedding = nn.Sequential(
+            nn.Linear(2, self.d_model),
+            nn.ReLU()
+        )
+
+        # Projects grid cell features (Probability, Relative_X, Relative_Y) to d_model
+        self.grid_embedding = nn.Sequential(
+            nn.Linear(3, self.d_model),
+            nn.ReLU()
+        )
+
+        # --- Attention Modules ---
+        # 1. Social Attention: Query = Ego Drone, Key/Value = All Drones
+        self.social_attention = nn.MultiheadAttention(
+            embed_dim=self.d_model, 
+            num_heads=self.n_heads, 
+            batch_first=True
+        )
+
+        # 2. Spatial Attention: Query = Ego Drone, Key/Value = Grid Cells
+        self.spatial_attention = nn.MultiheadAttention(
+            embed_dim=self.d_model, 
+            num_heads=self.n_heads, 
+            batch_first=True
+        )
+
+        # --- Heads ---
+        # Combines Social Context + Spatial Context
+        fusion_dim = self.d_model * 2 
+        
+        self.action_head = nn.Sequential(
+            nn.Linear(fusion_dim, 16),
+            nn.ReLU(),
+            nn.Linear(16, n_actions)
+        )
+        
+        self.value_head = nn.Sequential(
+            nn.Linear(fusion_dim, 16),
+            nn.ReLU(),
+            nn.Linear(16, 1)
+        )
+```
+
+```
+reward_scheme = Reward(
+        default=-0.15,
+        leave_grid=-1,
+        exceed_timestep=0,
+        drones_collision=0,
+        search_cell=0,
+        search_and_find=10,
+        proximity_threshold=1,
+    )
+```
+
+![](attention_1.png)
 
 
 

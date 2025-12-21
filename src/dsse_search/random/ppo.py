@@ -5,8 +5,10 @@ from ray.rllib.core.rl_module.rl_module import RLModuleSpec
 
 from common.ppo import initialize_base_evaluation_ppo_from_args, initialize_base_training_ppo_from_args
 from dsse_search.random.cli import EnvSpecificArgs, EvalArgs, TrainingArgs
+from dsse_search.random.module.attention_module import DsseSearchAttentionRLModule
 from dsse_search.random.module.cnn_mlp_fusion_module import DsseSearchCnnMlpFusionRLModule
 from dsse_search.random.module.mlp_module import DsseSearchMlpRLModule
+from dsse_search.random.module.mlp_module_v2 import DsseSearchMlpV2RLModule
 
 
 def apply_environment_config(config: PPOConfig, args: EnvSpecificArgs, env_name: str) -> PPOConfig:
@@ -74,6 +76,43 @@ def apply_policy_config(config: PPOConfig, mode: str) -> PPOConfig:
                         policy_mapping_fn=lambda agent_id, *args, **kwargs: "shared_mlp"
                     )
                 )
+    
+    elif mode == "shared_attention":
+        return (config
+                    .rl_module(
+                        rl_module_spec=RLModuleSpec(
+                            module_class=DsseSearchAttentionRLModule,
+                            model_config={
+                            }
+                        )   
+                    )
+                    .multi_agent(
+                        policies={
+                            "shared_mlp",
+                        },
+                        policy_mapping_fn=lambda agent_id, *args, **kwargs: "shared_mlp"
+                    )
+                )
+    
+    elif mode == "shared_mlp_v2":
+        return (config
+                    .rl_module(
+                        rl_module_spec=RLModuleSpec(
+                            module_class=DsseSearchMlpV2RLModule,
+                            model_config={
+                                "mlp_hiddens": [1024, 512, 256, 128, 64, 32, 16],
+                                "mlp_dropout": 0,
+                            }
+                        )   
+                    )
+                    .multi_agent(
+                        policies={
+                            "shared_mlp_v2",
+                        },
+                        policy_mapping_fn=lambda agent_id, *args, **kwargs: "shared_mlp_v2"
+                    )
+                )
+
     else:
         raise ValueError(f"Unknown mode: {mode}")
 
