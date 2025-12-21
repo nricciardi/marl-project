@@ -32,8 +32,8 @@ python3 -O ./src/dsse_search/random/train.py \
     --gamma 0.95 \
     --clip-param 0.3 \
     --lambda 0.95 \
-    --training-batch-size 8192 \
-    --minibatch-size 1024 \
+    --training-batch-size 4096 \
+    --minibatch-size 512 \
     --epochs 10 \
     --num-learners 1 \
     --num-gpus-per-learner 0.5 \

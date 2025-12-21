@@ -99,10 +99,7 @@ def apply_policy_config(config: PPOConfig, mode: str) -> PPOConfig:
                     .rl_module(
                         rl_module_spec=RLModuleSpec(
                             module_class=DsseSearchMlpV2RLModule,
-                            model_config={
-                                "mlp_hiddens": [1024, 512, 256, 128, 64, 32, 16],
-                                "mlp_dropout": 0,
-                            }
+                            model_config={}
                         )   
                     )
                     .multi_agent(

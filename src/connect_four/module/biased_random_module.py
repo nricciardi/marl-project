@@ -20,7 +20,6 @@ class BiasedRandomConnect4RLModule(TorchRLModule, ValueFunctionAPI):
     def _compute_random_logits(self, batch: Dict[str, Any]):
         obs_data = batch[Columns.OBS]
         
-        # 1. Load Action Mask (Primary source for shape determination)
         action_mask = obs_data["action_mask"]
         
         if not torch.is_tensor(action_mask):
@@ -29,13 +28,13 @@ class BiasedRandomConnect4RLModule(TorchRLModule, ValueFunctionAPI):
         # Ensure the mask is on the same device as the model parameters
         action_mask = action_mask.to(self._param.device)
 
-        # 2. Expand Logits
+        # Expand Logits
         # self._param is assumed to be shape (A,)
         # - If action_mask is (A,), expand_as keeps it (A,) -> Dim 1 (Unbatched)
         # - If action_mask is (B, A), expand_as broadcasts it to (B, A) -> Dim 2 (Batched)
         logits = self._param.expand_as(action_mask)
 
-        # 3. Apply Masking
+        # Apply Masking
         # Set logits to -inf where action_mask is 0
         masked_logits = logits.masked_fill(action_mask == 0, float("-inf"))
         

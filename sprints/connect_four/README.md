@@ -141,7 +141,7 @@ rl_module_specs={
 }
 ```
 
-![](cnn_vs_biased_random_2.png)
+![](cnn_vs_mlp_2.png)
 
 
 

@@ -29,22 +29,43 @@ class DsseSearchMlpV2RLModule(TorchRLModule, ValueFunctionAPI):
 
         rows, cols = probability_matrix.shape
 
-        mlp_hiddens = self.model_config.get("mlp_hiddens")
-        mlp_dropout = self.model_config.get("mlp_dropout", 0.0)
+        # mlp_hiddens = self.model_config.get("mlp_hiddens")
+        # mlp_dropout = self.model_config.get("mlp_dropout", 0.0)
 
-        print("Drone Coordinates MLP Input Dim:", len(drone_coordinates))
+        # print("Drone Coordinates MLP Input Dim:", len(drone_coordinates))
 
-        # (batch_size, n_drones + rows * cols, 3)
+        # # (batch_size, n_drones + rows * cols, 3)
 
-        self.mlp = nn.Sequential(
-            *build_mlp(
-                mlp_hiddens=mlp_hiddens,
-                input_dim=len(drone_coordinates) + rows * cols,
-                dropout=mlp_dropout
-            )
+        # self.mlp = nn.Sequential(
+        #     *build_mlp(
+        #         mlp_hiddens=mlp_hiddens,
+        #         input_dim=int(len(drone_coordinates) / 2 + rows * cols),
+        #         dropout=mlp_dropout
+        #     )
+        # )
+
+        # output_dim = mlp_hiddens[-1]
+
+        self.embed_dim = 4
+
+        self.map_projection = nn.Linear(3, self.embed_dim)
+        nn.init.orthogonal_(self.map_projection.weight, gain=np.sqrt(2))
+        self.drone_projection = nn.Linear(2, self.embed_dim)
+        nn.init.orthogonal_(self.drone_projection.weight, gain=np.sqrt(2))
+
+        self.drone_to_map_mha = nn.MultiheadAttention(
+            embed_dim=self.embed_dim,
+            num_heads=2,
+            batch_first=True
         )
 
-        output_dim = mlp_hiddens[-1]
+        self.drone_to_drone_mha = nn.MultiheadAttention(
+            embed_dim=self.embed_dim,
+            num_heads=2,
+            batch_first=True
+        )
+
+        output_dim = self.embed_dim
 
         # Action Head (Policy) -> Logits
         self.action_head = nn.Linear(output_dim, n_actions)
@@ -90,6 +111,7 @@ class DsseSearchMlpV2RLModule(TorchRLModule, ValueFunctionAPI):
         batch_size, rows, cols = probability_matrix.shape
         device = probability_matrix.device
 
+        # Normalized grid coordinates
         r_indices = torch.arange(rows, device=device).float() / rows
         c_indices = torch.arange(cols, device=device).float() / cols
 
@@ -99,7 +121,7 @@ class DsseSearchMlpV2RLModule(TorchRLModule, ValueFunctionAPI):
         flat_c = grid_c.reshape(-1).unsqueeze(0).expand(batch_size, -1).unsqueeze(-1)
 
         flat_probs = probability_matrix.reshape(batch_size, -1).unsqueeze(-1)
-        result = torch.cat([flat_r, flat_c, flat_probs], dim=-1)
+        flat_prob_matrix = torch.cat([flat_r, flat_c, flat_probs], dim=-1)  # (Batch, rows * cols, 3)
 
         if not torch.is_tensor(drone_coordinates):
             drone_coordinates = torch.from_numpy(drone_coordinates)
@@ -117,17 +139,27 @@ class DsseSearchMlpV2RLModule(TorchRLModule, ValueFunctionAPI):
         drones_xy_norm[..., 0] = drones_xy_norm[..., 0] / rows
         drones_xy_norm[..., 1] = drones_xy_norm[..., 1] / cols
 
-        drone_val = torch.ones((batch_size, drones_xy.shape[1], 1), device=device)
+        drone_embeddings = self.drone_projection(drones_xy_norm)  # (Batch, n_drones, embed_dim)
+        flat_prob_matrix_embeddings = self.map_projection(flat_prob_matrix)  # (Batch, rows * cols, embed_dim)
 
-        drones_final = torch.cat([drones_xy_norm, drone_val], dim=-1)
 
-        combined_input = torch.cat([result, drones_final], dim=1)   # (Batch, n_drones + rows * cols, 3)
+        drone_map_output, _ = self.drone_to_map_mha(
+            query=drone_embeddings,
+            key=flat_prob_matrix_embeddings,
+            value=flat_prob_matrix_embeddings,
+        )   # (Batch, n_drones, embed_dim)
 
-        embeddings = self.mlp(combined_input)
+        drone_drone_output, _ = self.drone_to_drone_mha(
+            query=drone_map_output,
+            key=drone_map_output,
+            value=drone_map_output,
+        )   # (Batch, n_drones, embed_dim)
 
-        logits = self.action_head(embeddings)
+        ego_drone_embedding = drone_drone_output[:, 0, :]  # (Batch, embed_dim)
 
-        return embeddings, logits
+        logits = self.action_head(ego_drone_embedding)
+
+        return ego_drone_embedding, logits
 
     @override(TorchRLModule)
     def _forward(self, batch: Dict[str, Any], **kwargs) -> Dict[str, Any]:
