@@ -20,9 +20,9 @@ checkpoint_dir=$1
 
 python3 -O ./src/dsse_search/random/train.py \
     --seed 42 \
-    --mode shared_mlp_v2 \
+    --mode shared_cnn_mlp_fusion \
     --checkpoint-dir $checkpoint_dir \
-    --iters 1000 \
+    --iters 100000 \
     --save-interval 10 \
     --env-runners 6 \
     --num-envs-per-env-runner 10 \
@@ -32,9 +32,9 @@ python3 -O ./src/dsse_search/random/train.py \
     --gamma 0.95 \
     --clip-param 0.3 \
     --lambda 0.95 \
-    --training-batch-size 4096 \
-    --minibatch-size 512 \
-    --epochs 10 \
+    --training-batch-size 10240 \
+    --minibatch-size 2048 \
+    --epochs 5 \
     --num-learners 1 \
     --num-gpus-per-learner 0.5 \
     --num-cpus-per-learner 1 \

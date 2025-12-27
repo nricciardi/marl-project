@@ -532,6 +532,57 @@ model_config={
 ![](mlp_8.png)
 
 
+### 9 
+
+```
+{
+    "mlp_hiddens": [128, 128, 128],
+    "mlp_dropout": 0,
+}
+```
+
+```
+python3 -O ./src/dsse_search/random/train.py \
+    --seed 42 \
+    --mode shared_cnn_mlp_fusion \
+    --checkpoint-dir $checkpoint_dir \
+    --iters 100000 \
+    --save-interval 10 \
+    --env-runners 6 \
+    --num-envs-per-env-runner 10 \
+    --num-cpus-per-env-runner 1 \
+    --num-gpus-per-env-runner 0 \
+    --lr 1e-4 \
+    --gamma 0.95 \
+    --clip-param 0.3 \
+    --lambda 0.95 \
+    --training-batch-size 10240 \
+    --minibatch-size 2048 \
+    --epochs 5 \
+    --num-learners 1 \
+    --num-gpus-per-learner 0.5 \
+    --num-cpus-per-learner 1 \
+    --entropy-coeff 0.01 \
+    --grid-size 40 \
+    --timestep-limit 100 \
+    --person-amount 1 \
+    --dispersion-inc 0.1 \
+    --drone-amount 3 \
+    --drone-speed 10 \
+    --detection-probability 1
+```
+
+```
+Reward(
+        default=-0.15,
+        leave_grid=-1,
+        exceed_timestep=0,
+        drones_collision=0,
+        search_cell=0,
+        search_and_find=10,
+        proximity_threshold=1,
+    )
+```
 
 
 ## Attention Module

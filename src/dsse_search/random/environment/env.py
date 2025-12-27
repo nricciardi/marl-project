@@ -153,8 +153,8 @@ class DroneSwarmSearch(DroneSwarmSearchBase):
         self.disaster_position = self.person_initial_position
 
         speed_vector = (
-            random.random() * 2 - 1,
-            random.random() * 2 - 1
+            min(random.random() + 0.5, 1),
+            min(random.random() + 0.5, 1)
         )
 
         # print(f"New person initial position: {self.person_initial_position}, speed vector: {speed_vector}")
