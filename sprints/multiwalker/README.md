@@ -379,9 +379,74 @@ python3 -O ./src/multiwalker/train.py \
 ![](11.png)
 
 
+### 12
+
+```
+python3 -O ./src/multiwalker/train.py \
+    --seed 42 \
+    --mode shared \
+    --checkpoint-dir $checkpoint_dir \
+    --iters 1000 \
+    --save-interval 10 \
+    --env-runners 6 \
+    --num-envs-per-env-runner 10 \
+    --num-cpus-per-env-runner 1 \
+    --num-gpus-per-env-runner 0 \
+    --stacked-frames 1 \
+    --fcnet-activation tanh \
+    --fcnet-hiddens 256 256 256 \
+    --lr 1e-4 \
+    --gamma 0.99 \
+    --clip-param 0.2 \
+    --lambda 0.95 \
+    --training-batch-size 16384 \
+    --epochs 10 \
+    --num-learners 1 \
+    --num-gpus-per-learner 0.5 \
+    --num-cpus-per-learner 1 \
+    --entropy-coeff 0.001 \
+    --minibatch-size 4096 \
+    --kl-coeff 0 \
+    --parallel-env \
+    --n-walkers 3
+```
+
+![](12.png)
 
 
+### 13
 
+```
+python3 -O ./src/multiwalker/train.py \
+    --seed 42 \
+    --mode shared \
+    --checkpoint-dir $checkpoint_dir \
+    --iters 1000 \
+    --save-interval 10 \
+    --env-runners 6 \
+    --num-envs-per-env-runner 10 \
+    --num-cpus-per-env-runner 1 \
+    --num-gpus-per-env-runner 0 \
+    --stacked-frames 1 \
+    --fcnet-activation tanh \
+    --fcnet-hiddens 256 256 256 \
+    --lr 5e-5 \
+    --gamma 0.99 \
+    --clip-param 0.2 \
+    --lambda 0.95 \
+    --training-batch-size 16384 \
+    --epochs 10 \
+    --num-learners 1 \
+    --num-gpus-per-learner 0.5 \
+    --num-cpus-per-learner 1 \
+    --entropy-coeff 0.01 \
+    --minibatch-size 4096 \
+    --kl-coeff 0 \
+    --parallel-env \
+    --n-walkers 3
+```
+
+![](13.png)
 
 
 

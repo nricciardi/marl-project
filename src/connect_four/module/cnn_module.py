@@ -1,5 +1,6 @@
 from typing import Any, Dict, Optional
 
+from common.network import build_cnn, build_mlp
 import numpy as np
 import torch
 import torch.nn as nn
@@ -22,51 +23,47 @@ class Connect4CnnRLModule(TorchRLModule, ValueFunctionAPI):
         
         obs_space = self.observation_space["observation"]
         rows, cols, input_channels = obs_space.shape
+        n_actions = cols  # One action per column
 
-        cnn_hiddens = [input_channels] + self.model_config.get("cnn_layers")
-        mlp_hiddens = self.model_config.get("mlp_layers")
+        cnn_conv2d = self.model_config.get("cnn_conv2d")
+        cnn_strides = self.model_config.get("cnn_strides")
+        cnn_kernel_sizes = self.model_config.get("cnn_kernel_sizes")
+        cnn_paddings = self.model_config.get("cnn_paddings")
 
-        layers = []
-        
-        for i in range(1, len(cnn_hiddens)):
-            in_c = cnn_hiddens[i - 1]
-            out_c = cnn_hiddens[i]
-            
-            layers.append(nn.Conv2d(
-                in_channels=in_c, 
-                out_channels=out_c, 
-                kernel_size=3, 
-                stride=1, 
-                padding=1
-            ))
-            layers.append(nn.ReLU())
+        self.cnn = nn.Sequential(
+            *build_cnn(
+                cnn_conv2d,
+                cnn_strides,
+                cnn_kernel_sizes,
+                cnn_paddings,
+                flat=True
+            )
+        )
 
-            # TODO: Consider adding pooling layers or residual block if needed
-        
-        layers.append(nn.Flatten())
+        with torch.no_grad():
+            dummy_input = torch.zeros(1, cnn_conv2d[0], rows, cols)
+            cnn_output = self.cnn(dummy_input)
+            cnn_output_dim = cnn_output.shape[1]
 
-        flattened_size = rows * cols * cnn_hiddens[-1]
+        mlp_hiddens = self.model_config.get("mlp_hiddens")
+        mlp_dropout = self.model_config.get("mlp_dropout", 0.0)
 
-        layers.append(nn.LayerNorm(flattened_size))
+        self.mlp = nn.Sequential(
+            *build_mlp(
+                mlp_hiddens=mlp_hiddens,
+                input_dim=cnn_output_dim,
+                dropout=mlp_dropout
+            )
+        )
 
-        prev_dim = flattened_size
-        for hidden_dim in mlp_hiddens:
-            layer = nn.Linear(prev_dim, hidden_dim)
-            nn.init.orthogonal_(layer.weight, gain=np.sqrt(2))
-            nn.init.constant_(layer.bias, 0.0)
-            
-            layers.append(layer)
-            layers.append(nn.ReLU())
-            prev_dim = hidden_dim
-
-        self.tower = nn.Sequential(*layers)
+        output_dim = mlp_hiddens[-1]
 
         # Action Head (Policy) -> Logits
-        self.action_head = nn.Linear(mlp_hiddens[-1], self.action_space.n)
+        self.action_head = nn.Linear(output_dim, n_actions)
         nn.init.orthogonal_(self.action_head.weight, gain=0.01)
 
         # Value Head (Critic) -> Scalar
-        self.value_head = nn.Linear(mlp_hiddens[-1], 1)
+        self.value_head = nn.Linear(output_dim, 1)
         nn.init.orthogonal_(self.value_head.weight, gain=1.0)
 
     def _compute_embeddings_and_logits(self, batch: Dict[str, Any]):
@@ -96,7 +93,8 @@ class Connect4CnnRLModule(TorchRLModule, ValueFunctionAPI):
         x = grid.permute(0, 3, 1, 2)
 
         # Forward Pass
-        embeddings = self.tower(x)
+        cnn_embeddings = self.cnn(x)
+        embeddings = self.mlp(cnn_embeddings)
         logits = self.action_head(embeddings)
 
         action_mask = action_mask.to(logits.device)

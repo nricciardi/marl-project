@@ -34,7 +34,8 @@ if __name__ == "__main__":
         env,
         n_episodes=args.n_episodes,
         explore=args.explore,
-        sleep_time=args.sleep_time
+        sleep_time=args.sleep_time,
+        setup_sleep_time=args.setup_sleep_time,
     )
 
     plot_simulation_results(results)

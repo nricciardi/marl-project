@@ -22,20 +22,20 @@ python3 -O ./src/connect_four/train.py \
     --seed 42 \
     --mode shared_cnn \
     --checkpoint-dir $checkpoint_dir \
-    --iters 500 \
+    --iters 100000 \
     --save-interval 10 \
     --env-runners 6 \
-    --num-envs-per-env-runner 20 \
+    --num-envs-per-env-runner 10 \
     --num-cpus-per-env-runner 1 \
     --num-gpus-per-env-runner 0 \
     --lr 1e-4 \
-    --gamma 0.9999 \
+    --gamma 0.99 \
     --clip-param 0.3 \
     --lambda 0.95 \
-    --training-batch-size 5000 \
-    --epochs 10 \
+    --training-batch-size 8192 \
+    --epochs 5 \
     --num-learners 1 \
     --num-gpus-per-learner 0.5 \
     --num-cpus-per-learner 1 \
     --entropy-coeff 0.01 \
-    --minibatch-size 500
+    --minibatch-size 1024

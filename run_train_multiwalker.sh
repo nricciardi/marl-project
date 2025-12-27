@@ -22,27 +22,26 @@ python3 -O ./src/multiwalker/train.py \
     --seed 42 \
     --mode shared \
     --checkpoint-dir $checkpoint_dir \
-    --iters 200 \
+    --iters 10000 \
     --save-interval 10 \
     --env-runners 6 \
-    --num-envs-per-env-runner 20 \
+    --num-envs-per-env-runner 10 \
     --num-cpus-per-env-runner 1 \
     --num-gpus-per-env-runner 0 \
-    --stacked-frames 4 \
-    --observation-filter MeanStdFilter \
+    --stacked-frames 1 \
     --fcnet-activation tanh \
-    --fcnet-hiddens 400 300 \
-    --lr 1e-4 \
-    --gamma 0.995 \
-    --clip-param 0.3 \
+    --fcnet-hiddens 256 256 256 \
+    --lr 5e-5 \
+    --gamma 0.99 \
+    --clip-param 0.2 \
     --lambda 0.95 \
-    --training-batch-size 50000 \
+    --training-batch-size 16384 \
     --epochs 10 \
     --num-learners 1 \
     --num-gpus-per-learner 0.5 \
     --num-cpus-per-learner 1 \
-    --entropy-coeff 0.01 \
-    --minibatch-size 5000 \
-    --kl-coeff 1.0 \
+    --entropy-coeff 0.001 \
+    --minibatch-size 4096 \
+    --kl-coeff 0 \
     --parallel-env \
     --n-walkers 3

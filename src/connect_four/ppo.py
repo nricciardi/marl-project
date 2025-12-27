@@ -32,8 +32,12 @@ def apply_policy_config(config: PPOConfig, mode: str) -> PPOConfig:
                         rl_module_spec=RLModuleSpec(
                             module_class=Connect4CnnRLModule,
                             model_config={
-                                "cnn_layers": [32, 64, 128],
-                                "mlp_layers": [256, 256],
+                                "cnn_conv2d": [2, 64, 64, 64, 64],
+                                "cnn_kernel_sizes": [3, 3, 3, 3, 3],
+                                "cnn_strides": [1, 1, 1, 2, 1],
+                                "cnn_paddings": [1, 1, 1, 1, 1],
+                                "mlp_hiddens": [256, 256],
+                                "mlp_dropout": 0,
                             }
                         )   
                     )
@@ -53,8 +57,12 @@ def apply_policy_config(config: PPOConfig, mode: str) -> PPOConfig:
                                 "custom_cnn": RLModuleSpec(
                                     module_class=Connect4CnnRLModule,
                                     model_config={
-                                        "cnn_layers": [32, 64, 128],
-                                        "mlp_layers": [256, 256],
+                                        "cnn_conv2d": [2, 64, 64, 64, 64],
+                                        "cnn_kernel_sizes": [3, 3, 3, 3, 3],
+                                        "cnn_strides": [1, 1, 1, 2, 1],
+                                        "cnn_paddings": [1, 1, 1, 1, 1],
+                                        "mlp_hiddens": [256, 256],
+                                        "mlp_dropout": 0,
                                     }
                                 ),
                                 "custom_biased_random": RLModuleSpec(
@@ -81,8 +89,12 @@ def apply_policy_config(config: PPOConfig, mode: str) -> PPOConfig:
                             "custom_cnn": RLModuleSpec(
                                 module_class=Connect4CnnRLModule,
                                 model_config={
-                                    "cnn_layers": [32, 64, 128],
-                                    "mlp_layers": [256, 256],
+                                    "cnn_conv2d": [2, 64, 64, 64, 64],
+                                    "cnn_kernel_sizes": [3, 3, 3, 3, 3],
+                                    "cnn_strides": [1, 1, 1, 1, 2],
+                                    "cnn_paddings": [1, 1, 1, 1, 1],
+                                    "mlp_hiddens": [256, 256],
+                                    "mlp_dropout": 0,
                                 }
                             ),
                             "custom_mlp": RLModuleSpec(

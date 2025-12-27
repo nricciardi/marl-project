@@ -144,6 +144,58 @@ rl_module_specs={
 ![](cnn_vs_mlp_2.png)
 
 
+### 4
+
+```
+python3 -O ./src/connect_four/train.py \
+    --seed 42 \
+    --mode cnn_vs_mlp \
+    --checkpoint-dir $checkpoint_dir \
+    --iters 10000 \
+    --save-interval 10 \
+    --env-runners 6 \
+    --num-envs-per-env-runner 10 \
+    --num-cpus-per-env-runner 1 \
+    --num-gpus-per-env-runner 0 \
+    --lr 1e-4 \
+    --gamma 0.99 \
+    --clip-param 0.3 \
+    --lambda 0.95 \
+    --training-batch-size 8192 \
+    --epochs 5 \
+    --num-learners 1 \
+    --num-gpus-per-learner 0.5 \
+    --num-cpus-per-learner 1 \
+    --entropy-coeff 0.01 \
+    --minibatch-size 1024
+```
+
+```py
+rl_module(
+    rl_module_spec=MultiRLModuleSpec(
+        rl_module_specs={
+            "custom_cnn": RLModuleSpec(
+                module_class=Connect4CnnRLModule,
+                model_config={
+                    "cnn_conv2d": [2, 64, 64, 64, 64],
+                    "cnn_kernel_sizes": [3, 3, 3, 3, 3],
+                    "cnn_strides": [1, 1, 1, 1, 2],
+                    "cnn_paddings": [1, 1, 1, 1, 1],
+                    "mlp_hiddens": [256, 256],
+                    "mlp_dropout": 0,
+                }
+            ),
+            "custom_mlp": RLModuleSpec(
+                module_class=Connect4MlpRLModule,
+                model_config={
+                    "fcnet_hiddens": [256, 256],
+                }
+            ),
+        }
+    )   
+)
+```
+
 
 ## Shared CNN
 

@@ -20,9 +20,10 @@
             "program": "${workspaceFolder}/src/connect_four/eval.py",
             "console": "integratedTerminal",
             "args": [
-                "--checkpoint-path", "${workspaceFolder}/checkpoints/connect_four/PPO_2025-12-14_16-30-42/PPO_connect_four_da505_00000_0_clip_param=0.3000,entropy_coeff=0.0100,gamma=0.9900,lambda=0.9500,lr=0.0001,minibatch_size=500,num__2025-12-14_16-30-42/checkpoint_000094",
+                "--checkpoint-path", "${workspaceFolder}/checkpoints/connect_four/PPO_2025-12-26_18-50-58/PPO_connect_four_6f0c8_00000_0_clip_param=0.3000,entropy_coeff=0.0100,gamma=0.9900,lambda=0.9500,lr=0.0001,minibatch_size=1024,num_2025-12-26_18-50-58/checkpoint_000099",
                 "--n-episodes", "5",
-                "--sleep-time", "1"
+                "--sleep-time", "1",
+                "--setup-sleep-time", "0"
             ],
             "env": {
                 "PYTHONPATH": "${workspaceFolder}/src:${PYTHONPATH}"
@@ -85,11 +86,12 @@
             "program": "${workspaceFolder}/src/multiwalker/eval.py",
             "console": "integratedTerminal",
             "args": [
-                "--checkpoint-path", "${workspaceFolder}/checkpoints/multiwalker/PPO_2025-12-13_09-56-28/PPO_multiwalker_9ca07_00000_0_clip_param=0.2000,entropy_coeff=0.0100,gamma=0.9900,lambda=0.9500,lr=0.0003,minibatch_size=4096,num__2025-12-13_09-56-28/checkpoint_000006",
+                "--checkpoint-path", "${workspaceFolder}/checkpoints/multiwalker/PPO_2025-12-23_18-57-33/PPO_multiwalker_db645_00000_0_clip_param=0.2000,entropy_coeff=0.0010,gamma=0.9900,lambda=0.9500,lr=0.0001,minibatch_size=4096,kl_c_2025-12-23_18-57-33/checkpoint_000076",
                 "--n-episodes", "5",
                 "--mode", "shared",
-                "--stacked-frames", "4",
+                "--stacked-frames", "1",
                 "--n-walkers", "3",
+                "--setup-sleep-time", "5"
             ],
             "env": {
                 "PYTHONPATH": "${workspaceFolder}/src:${PYTHONPATH}"
