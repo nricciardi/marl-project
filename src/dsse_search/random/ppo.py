@@ -39,10 +39,10 @@ def apply_policy_config(config: PPOConfig, mode: str) -> PPOConfig:
                         rl_module_spec=RLModuleSpec(
                             module_class=DsseSearchCnnMlpFusionRLModule,
                             model_config={
-                                "probability_matrix_cnn_conv2d": [1, 16, 32, 64],
-                                "probability_matrix_cnn_kernel_sizes": [3, 3, 3, 3],
-                                "probability_matrix_cnn_strides": [1, 1, 1, 2],
-                                "probability_matrix_cnn_paddings": [1, 1, 1, 1],
+                                "probability_matrix_cnn_conv2d": [1, 16, 32, 32, 32],
+                                "probability_matrix_cnn_kernel_sizes": [3, 3, 3, 3, 3],
+                                "probability_matrix_cnn_strides": [1, 1, 2, 2, 2],
+                                "probability_matrix_cnn_paddings": [1, 1, 1, 1, 1],
                                 "drone_coordinates_mlp_hiddens": [16, 16],
                                 "drone_coordinates_mlp_dropout": 0,
                                 "fusion_mlp_hiddens": [128, 128, 128],
